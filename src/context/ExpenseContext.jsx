@@ -1,48 +1,80 @@
-import { createContext, useReducer, useEffect } from 'react';
-import { loadExpenses, saveExpenses } from '../utils/storage';
+import { createContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../hooks/useAuth';
 
 export const ExpenseContext = createContext(null);
 
-const initialState = {
-  expenses: loadExpenses(),
-};
-
-function expenseReducer(state, action) {
-  switch (action.type) {
-    case 'ADD_EXPENSE': {
-      const newExpense = {
-        id: crypto.randomUUID(),
-        ...action.payload,
-      };
-      return { ...state, expenses: [newExpense, ...state.expenses] };
-    }
-
-    case 'UPDATE_EXPENSE': {
-      const updated = state.expenses.map((exp) =>
-        exp.id === action.payload.id ? { ...exp, ...action.payload } : exp
-      );
-      return { ...state, expenses: updated };
-    }
-
-    case 'DELETE_EXPENSE': {
-      const filtered = state.expenses.filter((exp) => exp.id !== action.payload);
-      return { ...state, expenses: filtered };
-    }
-
-    default:
-      return state;
-  }
-}
-
 export function ExpenseProvider({ children }) {
-  const [state, dispatch] = useReducer(expenseReducer, initialState);
+  const { user } = useAuth();
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchExpenses = useCallback(async () => {
+    if (!user) {
+      setExpenses([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Erreur lors du chargement des dépenses :', error);
+    } else {
+      setExpenses(data);
+    }
+    setLoading(false);
+  }, [user]);
 
   useEffect(() => {
-    saveExpenses(state.expenses);
-  }, [state.expenses]);
+    fetchExpenses();
+  }, [fetchExpenses]);
+
+  const addExpense = async (expense) => {
+    const { data, error } = await supabase
+      .from('expenses')
+      .insert([{ ...expense, user_id: user.id }])
+      .select();
+
+    if (error) {
+      console.error('Erreur lors de l\'ajout de la dépense :', error);
+      return;
+    }
+    setExpenses((prev) => [data[0], ...prev]);
+  };
+
+  const updateExpense = async (id, updates) => {
+    const { data, error } = await supabase
+      .from('expenses')
+      .update(updates)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Erreur lors de la modification de la dépense :', error);
+      return;
+    }
+    setExpenses((prev) => prev.map((exp) => (exp.id === id ? data[0] : exp)));
+  };
+
+  const deleteExpense = async (id) => {
+    const { error } = await supabase.from('expenses').delete().eq('id', id);
+
+    if (error) {
+      console.error('Erreur lors de la suppression de la dépense :', error);
+      return;
+    }
+    setExpenses((prev) => prev.filter((exp) => exp.id !== id));
+  };
 
   return (
-    <ExpenseContext.Provider value={{ expenses: state.expenses, dispatch }}>
+    <ExpenseContext.Provider
+      value={{ expenses, loading, addExpense, updateExpense, deleteExpense }}
+    >
       {children}
     </ExpenseContext.Provider>
   );

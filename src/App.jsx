@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useExpenses } from './hooks/useExpenses';
 import { useIncomes } from './hooks/useIncomes';
+import { useCurrency } from './hooks/useCurrency';
+import { useAuth } from './hooks/useAuth';
 import { formatAmount } from './utils/formatters';
+import AuthForm from './components/AuthForm';
 import NavTabs from './components/NavTabs';
+import CurrencySelector from './components/CurrencySelector';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseFilters from './components/ExpenseFilters';
 import BudgetManager from './components/BudgetManager';
@@ -15,8 +19,10 @@ import IncomeList from './components/IncomeList';
 import './App.css';
 
 function App() {
+  const { user, loading, signOut } = useAuth();
   const { totalAmount: totalExpenses } = useExpenses();
   const { totalAmount: totalIncomes } = useIncomes();
+  const { currency } = useCurrency();
   const balance = totalIncomes - totalExpenses;
 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -29,19 +35,35 @@ function App() {
   const handleEditIncome = (income) => setEditingIncome(income);
   const handleFinishEditIncome = () => setEditingIncome(null);
 
+  if (loading) {
+    return <div className="auth-loading">Chargement...</div>;
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
+
   return (
     <div className="app">
       <header className="app-header">
-        <h1>💰 Gestion des finances</h1>
+        <div className="app-header-top">
+          <h1>💰 Gestion des finances</h1>
+          <div className="header-actions">
+            <CurrencySelector />
+            <button type="button" className="logout-btn" onClick={signOut}>
+              Déconnexion
+            </button>
+          </div>
+        </div>
         <div className="balance-summary">
           <span className="balance-item balance-income">
-            + {formatAmount(totalIncomes)}
+            + {formatAmount(totalIncomes, currency)}
           </span>
           <span className="balance-item balance-expense">
-            − {formatAmount(totalExpenses)}
+            − {formatAmount(totalExpenses, currency)}
           </span>
           <span className={`balance-item balance-total ${balance >= 0 ? 'positive' : 'negative'}`}>
-            Solde : {formatAmount(balance)}
+            Solde : {formatAmount(balance, currency)}
           </span>
         </div>
       </header>

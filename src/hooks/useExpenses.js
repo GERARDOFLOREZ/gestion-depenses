@@ -15,20 +15,8 @@ export function useExpenses() {
     throw new Error('useExpenses doit être utilisé à l\'intérieur d\'un ExpenseProvider');
   }
 
-  const { expenses, dispatch } = context;
+  const { expenses, loading, addExpense, updateExpense, deleteExpense } = context;
   const [filters, setFilters] = useState(defaultFilters);
-
-  const addExpense = (expense) => {
-    dispatch({ type: 'ADD_EXPENSE', payload: expense });
-  };
-
-  const updateExpense = (id, updates) => {
-    dispatch({ type: 'UPDATE_EXPENSE', payload: { id, ...updates } });
-  };
-
-  const deleteExpense = (id) => {
-    dispatch({ type: 'DELETE_EXPENSE', payload: id });
-  };
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -67,6 +55,7 @@ export function useExpenses() {
   return {
     expenses: filteredExpenses,
     allExpenses: expenses,
+    loading,
     addExpense,
     updateExpense,
     deleteExpense,

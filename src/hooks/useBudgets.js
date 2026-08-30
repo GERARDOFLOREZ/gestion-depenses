@@ -13,16 +13,8 @@ export function useBudgets() {
     );
   }
 
-  const { budgets, dispatch } = budgetContext;
+  const { budgets, loading, setBudget, removeBudget } = budgetContext;
   const { expenses } = expenseContext;
-
-  const setBudget = (categoryId, amount) => {
-    dispatch({ type: 'SET_BUDGET', payload: { categoryId, amount } });
-  };
-
-  const removeBudget = (categoryId) => {
-    dispatch({ type: 'REMOVE_BUDGET', payload: categoryId });
-  };
 
   const currentMonthExpenses = useMemo(() => {
     const now = new Date();
@@ -60,6 +52,7 @@ export function useBudgets() {
 
   return {
     budgets,
+    loading,
     setBudget,
     removeBudget,
     budgetStatus,

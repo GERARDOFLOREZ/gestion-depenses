@@ -1,7 +1,10 @@
-export function formatAmount(amount) {
-  return new Intl.NumberFormat('fr-FR', {
+export function formatAmount(amount, currency) {
+  const code = currency?.code || 'EUR';
+  const locale = currency?.locale || 'fr-FR';
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'EUR',
+    currency: code,
   }).format(amount);
 }
 

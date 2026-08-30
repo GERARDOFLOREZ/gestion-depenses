@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useBudgets } from '../hooks/useBudgets';
+import { useCurrency } from '../hooks/useCurrency';
 import { CATEGORIES } from '../data/categories';
 import { formatAmount } from '../utils/formatters';
 
 function BudgetManager() {
   const { budgets, setBudget, removeBudget } = useBudgets();
+  const { currency } = useCurrency();
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].id);
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
@@ -45,7 +47,7 @@ function BudgetManager() {
 
           <input
             type="number"
-            placeholder="Montant (€)"
+            placeholder="Montant"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             step="0.01"
@@ -61,7 +63,7 @@ function BudgetManager() {
           {definedBudgets.map((cat) => (
             <li key={cat.id} className="budget-defined-item">
               <span>{cat.label}</span>
-              <span>{formatAmount(budgets[cat.id])} / mois</span>
+              <span>{formatAmount(budgets[cat.id], currency)} / mois</span>
               <button
                 type="button"
                 className="budget-remove-btn"

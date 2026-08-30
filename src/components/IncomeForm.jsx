@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useIncomes } from '../hooks/useIncomes';
+import { useCurrency } from '../hooks/useCurrency';
 import { INCOME_CATEGORIES } from '../data/incomeCategories';
 import { getTodayISO } from '../utils/formatters';
 
@@ -12,6 +13,7 @@ const emptyForm = {
 
 function IncomeForm({ editingIncome, onFinishEdit }) {
   const { addIncome, updateIncome } = useIncomes();
+  const { currency } = useCurrency();
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
 
@@ -89,7 +91,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="income-amount">Montant (€)</label>
+        <label htmlFor="income-amount">Montant ({currency.symbol})</label>
         <input
           type="number"
           id="income-amount"

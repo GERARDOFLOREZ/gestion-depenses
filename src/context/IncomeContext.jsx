@@ -1,48 +1,80 @@
-import { createContext, useReducer, useEffect } from 'react';
-import { loadIncomes, saveIncomes } from '../utils/storage';
+import { createContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../hooks/useAuth';
 
 export const IncomeContext = createContext(null);
 
-const initialState = {
-  incomes: loadIncomes(),
-};
-
-function incomeReducer(state, action) {
-  switch (action.type) {
-    case 'ADD_INCOME': {
-      const newIncome = {
-        id: crypto.randomUUID(),
-        ...action.payload,
-      };
-      return { ...state, incomes: [newIncome, ...state.incomes] };
-    }
-
-    case 'UPDATE_INCOME': {
-      const updated = state.incomes.map((inc) =>
-        inc.id === action.payload.id ? { ...inc, ...action.payload } : inc
-      );
-      return { ...state, incomes: updated };
-    }
-
-    case 'DELETE_INCOME': {
-      const filtered = state.incomes.filter((inc) => inc.id !== action.payload);
-      return { ...state, incomes: filtered };
-    }
-
-    default:
-      return state;
-  }
-}
-
 export function IncomeProvider({ children }) {
-  const [state, dispatch] = useReducer(incomeReducer, initialState);
+  const { user } = useAuth();
+  const [incomes, setIncomes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchIncomes = useCallback(async () => {
+    if (!user) {
+      setIncomes([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('incomes')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Erreur lors du chargement des revenus :', error);
+    } else {
+      setIncomes(data);
+    }
+    setLoading(false);
+  }, [user]);
 
   useEffect(() => {
-    saveIncomes(state.incomes);
-  }, [state.incomes]);
+    fetchIncomes();
+  }, [fetchIncomes]);
+
+  const addIncome = async (income) => {
+    const { data, error } = await supabase
+      .from('incomes')
+      .insert([{ ...income, user_id: user.id }])
+      .select();
+
+    if (error) {
+      console.error('Erreur lors de l\'ajout du revenu :', error);
+      return;
+    }
+    setIncomes((prev) => [data[0], ...prev]);
+  };
+
+  const updateIncome = async (id, updates) => {
+    const { data, error } = await supabase
+      .from('incomes')
+      .update(updates)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Erreur lors de la modification du revenu :', error);
+      return;
+    }
+    setIncomes((prev) => prev.map((inc) => (inc.id === id ? data[0] : inc)));
+  };
+
+  const deleteIncome = async (id) => {
+    const { error } = await supabase.from('incomes').delete().eq('id', id);
+
+    if (error) {
+      console.error('Erreur lors de la suppression du revenu :', error);
+      return;
+    }
+    setIncomes((prev) => prev.filter((inc) => inc.id !== id));
+  };
 
   return (
-    <IncomeContext.Provider value={{ incomes: state.incomes, dispatch }}>
+    <IncomeContext.Provider
+      value={{ incomes, loading, addIncome, updateIncome, deleteIncome }}
+    >
       {children}
     </IncomeContext.Provider>
   );

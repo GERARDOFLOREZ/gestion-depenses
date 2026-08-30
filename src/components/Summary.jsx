@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
+import { useCurrency } from '../hooks/useCurrency';
 import { CATEGORIES } from '../data/categories';
 import { formatAmount } from '../utils/formatters';
 
 function Summary() {
   const { expenses, filteredTotalAmount } = useExpenses();
+  const { currency } = useCurrency();
 
   const totalsByCategory = useMemo(() => {
     return CATEGORIES.map((cat) => {
@@ -21,7 +23,7 @@ function Summary() {
 
   return (
     <section className="summary">
-      <h2>Résumé {filteredTotalAmount !== undefined && `— ${formatAmount(filteredTotalAmount)}`}</h2>
+      <h2>Résumé {filteredTotalAmount !== undefined && `— ${formatAmount(filteredTotalAmount, currency)}`}</h2>
 
       <div className="summary-bars">
         {totalsByCategory.map((cat) => {
@@ -30,7 +32,7 @@ function Summary() {
             <div key={cat.id} className="summary-row">
               <div className="summary-row-header">
                 <span>{cat.label}</span>
-                <span>{formatAmount(cat.total)}</span>
+                <span>{formatAmount(cat.total, currency)}</span>
               </div>
               <div className="summary-bar-track">
                 <div

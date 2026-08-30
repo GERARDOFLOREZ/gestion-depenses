@@ -1,9 +1,11 @@
 import { useExpenses } from '../hooks/useExpenses';
+import { useCurrency } from '../hooks/useCurrency';
 import { getCategoryById } from '../data/categories';
 import { formatAmount, formatDate } from '../utils/formatters';
 
 function ExpenseItem({ expense, onEdit }) {
   const { deleteExpense } = useExpenses();
+  const { currency } = useCurrency();
   const category = getCategoryById(expense.category);
 
   const handleDelete = () => {
@@ -26,7 +28,7 @@ function ExpenseItem({ expense, onEdit }) {
         <p className="expense-date">{formatDate(expense.date)}</p>
       </div>
 
-      <span className="expense-amount">{formatAmount(expense.amount)}</span>
+      <span className="expense-amount">{formatAmount(expense.amount, currency)}</span>
 
       <button
         className="expense-edit-btn"

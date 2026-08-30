@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../hooks/useExpenses';
+import { useCurrency } from '../hooks/useCurrency';
 import { CATEGORIES } from '../data/categories';
 import { formatAmount } from '../utils/formatters';
 
 function ExpenseChart() {
   const { expenses } = useExpenses();
+  const { currency } = useCurrency();
 
   const chartData = useMemo(() => {
     return CATEGORIES.map((cat) => {
@@ -38,7 +40,7 @@ function ExpenseChart() {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => formatAmount(value)} />
+          <Tooltip formatter={(value) => formatAmount(value, currency)} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>

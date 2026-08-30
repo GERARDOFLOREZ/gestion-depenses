@@ -15,20 +15,8 @@ export function useIncomes() {
     throw new Error('useIncomes doit être utilisé à l\'intérieur d\'un IncomeProvider');
   }
 
-  const { incomes, dispatch } = context;
+  const { incomes, loading, addIncome, updateIncome, deleteIncome } = context;
   const [filters, setFilters] = useState(defaultFilters);
-
-  const addIncome = (income) => {
-    dispatch({ type: 'ADD_INCOME', payload: income });
-  };
-
-  const updateIncome = (id, updates) => {
-    dispatch({ type: 'UPDATE_INCOME', payload: { id, ...updates } });
-  };
-
-  const deleteIncome = (id) => {
-    dispatch({ type: 'DELETE_INCOME', payload: id });
-  };
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -67,6 +55,7 @@ export function useIncomes() {
   return {
     incomes: filteredIncomes,
     allIncomes: incomes,
+    loading,
     addIncome,
     updateIncome,
     deleteIncome,
