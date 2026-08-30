@@ -1,42 +1,74 @@
-import { createContext, useReducer, useEffect } from 'react';
-import { loadBudgets, saveBudgets } from '../utils/storage';
+import { createContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../hooks/useAuth';
 
 export const BudgetContext = createContext(null);
 
-const initialState = {
-  budgets: loadBudgets(),
-};
-
-function budgetReducer(state, action) {
-  switch (action.type) {
-    case 'SET_BUDGET': {
-      const { categoryId, amount } = action.payload;
-      return {
-        ...state,
-        budgets: { ...state.budgets, [categoryId]: amount },
-      };
-    }
-
-    case 'REMOVE_BUDGET': {
-      const updated = { ...state.budgets };
-      delete updated[action.payload];
-      return { ...state, budgets: updated };
-    }
-
-    default:
-      return state;
-  }
-}
-
 export function BudgetProvider({ children }) {
-  const [state, dispatch] = useReducer(budgetReducer, initialState);
+  const { user } = useAuth();
+  const [budgets, setBudgets] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const fetchBudgets = useCallback(async () => {
+    if (!user) {
+      setBudgets({});
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await supabase.from('budgets').select('*');
+
+    if (error) {
+      console.error('Erreur lors du chargement des budgets :', error);
+    } else {
+      const budgetsMap = {};
+      data.forEach((row) => {
+        budgetsMap[row.category] = row.amount;
+      });
+      setBudgets(budgetsMap);
+    }
+    setLoading(false);
+  }, [user]);
 
   useEffect(() => {
-    saveBudgets(state.budgets);
-  }, [state.budgets]);
+    fetchBudgets();
+  }, [fetchBudgets]);
+
+  const setBudget = async (categoryId, amount) => {
+    const { error } = await supabase
+      .from('budgets')
+      .upsert(
+        { user_id: user.id, category: categoryId, amount },
+        { onConflict: 'user_id,category' }
+      );
+
+    if (error) {
+      console.error('Erreur lors de la définition du budget :', error);
+      return;
+    }
+    setBudgets((prev) => ({ ...prev, [categoryId]: amount }));
+  };
+
+  const removeBudget = async (categoryId) => {
+    const { error } = await supabase
+      .from('budgets')
+      .delete()
+      .eq('category', categoryId);
+
+    if (error) {
+      console.error('Erreur lors de la suppression du budget :', error);
+      return;
+    }
+    setBudgets((prev) => {
+      const updated = { ...prev };
+      delete updated[categoryId];
+      return updated;
+    });
+  };
 
   return (
-    <BudgetContext.Provider value={{ budgets: state.budgets, dispatch }}>
+    <BudgetContext.Provider value={{ budgets, loading, setBudget, removeBudget }}>
       {children}
     </BudgetContext.Provider>
   );
