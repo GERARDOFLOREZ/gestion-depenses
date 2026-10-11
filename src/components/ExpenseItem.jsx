@@ -1,12 +1,15 @@
 import { useExpenses } from '../hooks/useExpenses';
-import { useCurrency } from '../hooks/useCurrency';
-import { getCategoryById } from '../data/categories';
+import { useAccounts } from '../hooks/useAccounts';
+import { useCategories } from '../hooks/useCategories';
 import { formatAmount, formatDate } from '../utils/formatters';
 
 function ExpenseItem({ expense, onEdit }) {
   const { deleteExpense } = useExpenses();
-  const { currency } = useCurrency();
-  const category = getCategoryById(expense.category);
+  const { getAccountCurrency, getAccount } = useAccounts();
+  const { getExpenseCategory } = useCategories();
+  const currency = getAccountCurrency(expense.account_id);
+  const category = getExpenseCategory(expense.category);
+  const account = getAccount(expense.account_id);
 
   const handleDelete = () => {
     if (window.confirm(`Supprimer la dépense "${expense.label}" ?`)) {
@@ -25,7 +28,10 @@ function ExpenseItem({ expense, onEdit }) {
 
       <div className="expense-info">
         <p className="expense-label">{expense.label}</p>
-        <p className="expense-date">{formatDate(expense.date)}</p>
+        <p className="expense-date">
+          {formatDate(expense.date)}
+          {account ? ` · ${account.name}` : ''}
+        </p>
       </div>
 
       <span className="expense-amount">{formatAmount(expense.amount, currency)}</span>

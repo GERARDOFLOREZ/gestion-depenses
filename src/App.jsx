@@ -1,42 +1,66 @@
 import { useState } from 'react';
 import { useExpenses } from './hooks/useExpenses';
-import { useIncomes } from './hooks/useIncomes';
-import { useCurrency } from './hooks/useCurrency';
 import { useAuth } from './hooks/useAuth';
-import { formatAmount } from './utils/formatters';
+import { useView } from './hooks/useView';
+import { useAccounts } from './hooks/useAccounts';
+import { useViewTotals } from './hooks/useViewTotals';
+import { useAutomation } from './hooks/useAutomation';
+import { formatAmount, formatMonthLabel } from './utils/formatters';
 import AuthForm from './components/AuthForm';
+import ResetPasswordForm from './components/ResetPasswordForm';
 import NavTabs from './components/NavTabs';
-import CurrencySelector from './components/CurrencySelector';
+import ViewBar from './components/ViewBar';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseFilters from './components/ExpenseFilters';
 import BudgetManager from './components/BudgetManager';
 import BudgetOverview from './components/BudgetOverview';
 import Summary from './components/Summary';
 import ExpenseChart from './components/ExpenseChart';
+import MonthlyChart from './components/MonthlyChart';
+import MixedCurrencyNotice from './components/MixedCurrencyNotice';
+import AccountBalances from './components/AccountBalances';
+import AccountsPage from './components/AccountsPage';
+import GoalsPage from './components/GoalsPage';
+import RecurringPage from './components/RecurringPage';
+import DebtsPage from './components/DebtsPage';
+import CategoriesPage from './components/CategoriesPage';
 import ExpenseList from './components/ExpenseList';
 import IncomeForm from './components/IncomeForm';
 import IncomeList from './components/IncomeList';
 import './App.css';
 
-function App() {
-  const { user, loading, signOut } = useAuth();
-  const { totalAmount: totalExpenses } = useExpenses();
-  const { totalAmount: totalIncomes } = useIncomes();
-  const { currency } = useCurrency();
-  const balance = totalIncomes - totalExpenses;
+const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
 
+function Dashboard() {
+  const { viewCurrencyCode } = useView();
+  return (
+    <section className="tab-panel">
+      <AccountBalances />
+      {viewCurrencyCode ? (
+        <>
+          <MonthlyChart />
+          <ExpenseChart />
+          <Summary />
+        </>
+      ) : (
+        <MixedCurrencyNotice title="Graphiques" />
+      )}
+    </section>
+  );
+}
+
+function App() {
+  const { user, loading, signOut, recovering } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingExpense, setEditingExpense] = useState(null);
   const [editingIncome, setEditingIncome] = useState(null);
 
-  const handleEditExpense = (expense) => setEditingExpense(expense);
-  const handleFinishEditExpense = () => setEditingExpense(null);
-
-  const handleEditIncome = (income) => setEditingIncome(income);
-  const handleFinishEditIncome = () => setEditingIncome(null);
-
   if (loading) {
     return <div className="auth-loading">Chargement...</div>;
+  }
+
+  if (recovering) {
+    return <ResetPasswordForm />;
   }
 
   if (!user) {
@@ -45,11 +69,46 @@ function App() {
 
   return (
     <div className="app">
+      <Shell
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        signOut={signOut}
+        editingExpense={editingExpense}
+        setEditingExpense={setEditingExpense}
+        editingIncome={editingIncome}
+        setEditingIncome={setEditingIncome}
+      />
+    </div>
+  );
+}
+
+// Séparé pour que les hooks de données ne tournent que lorsque l'utilisateur est connecté.
+function Shell({
+  activeTab, setActiveTab, signOut,
+  editingExpense, setEditingExpense, editingIncome, setEditingIncome,
+}) {
+  useAutomation();
+  useExpenses();
+  const { month, accountId } = useView();
+  const { getAccount } = useAccounts();
+  const totals = useViewTotals();
+
+  const scopeLabel = [
+    month === 'all' ? 'Toute la période' : formatMonthLabel(month),
+    accountId === 'all' ? 'Tous les comptes' : getAccount(accountId)?.name,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  return (
+    <>
       <header className="app-header">
         <div className="app-header-top">
-          <h1>💰 Gestion des finances</h1>
+          <div>
+            <h1>💰 Gestion des finances</h1>
+            <p className="header-scope">{scopeLabel}</p>
+          </div>
           <div className="header-actions">
-            <CurrencySelector />
             <button type="button" className="logout-btn" onClick={signOut}>
               Déconnexion
             </button>
@@ -58,42 +117,51 @@ function App() {
         <div className="balance-summary">
           <div className="balance-item balance-income">
             <span className="balance-label">Revenus</span>
-            <span className="balance-value">+ {formatAmount(totalIncomes, currency)}</span>
+            {totals.map((t) => (
+              <span key={t.currency.code} className="balance-value">+ {formatAmount(t.income, t.currency)}</span>
+            ))}
           </div>
           <div className="balance-item balance-expense">
             <span className="balance-label">Dépenses</span>
-            <span className="balance-value">− {formatAmount(totalExpenses, currency)}</span>
+            {totals.map((t) => (
+              <span key={t.currency.code} className="balance-value">− {formatAmount(t.expense, t.currency)}</span>
+            ))}
           </div>
-          <div className={`balance-item balance-total ${balance >= 0 ? 'positive' : 'negative'}`}>
+          <div
+            className={`balance-item balance-total ${totals.every((t) => t.balance >= 0) ? 'positive' : 'negative'}`}
+          >
             <span className="balance-label">Solde</span>
-            <span className="balance-value">{formatAmount(balance, currency)}</span>
+            {totals.map((t) => (
+              <span key={t.currency.code} className="balance-value">{formatAmount(t.balance, t.currency)}</span>
+            ))}
           </div>
         </div>
       </header>
 
       <NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
+      {VIEW_TABS.includes(activeTab) && <ViewBar />}
+
       <main className="app-main">
-        {activeTab === 'dashboard' && (
-          <section className="tab-panel">
-            <ExpenseChart />
-            <Summary />
-          </section>
-        )}
+        {activeTab === 'dashboard' && <Dashboard />}
 
         {activeTab === 'incomes' && (
           <section className="tab-panel">
-            <IncomeForm editingIncome={editingIncome} onFinishEdit={handleFinishEditIncome} />
-            <IncomeList onEdit={handleEditIncome} />
+            <IncomeForm editingIncome={editingIncome} onFinishEdit={() => setEditingIncome(null)} />
+            <IncomeList onEdit={setEditingIncome} />
           </section>
         )}
 
         {activeTab === 'expenses' && (
           <section className="tab-panel">
-            <ExpenseForm editingExpense={editingExpense} onFinishEdit={handleFinishEditExpense} />
+            <ExpenseForm editingExpense={editingExpense} onFinishEdit={() => setEditingExpense(null)} />
             <ExpenseFilters />
-            <ExpenseList onEdit={handleEditExpense} />
+            <ExpenseList onEdit={setEditingExpense} />
           </section>
+        )}
+
+        {activeTab === 'accounts' && (
+          <section className="tab-panel"><AccountsPage /></section>
         )}
 
         {activeTab === 'budgets' && (
@@ -102,8 +170,13 @@ function App() {
             <BudgetOverview />
           </section>
         )}
+
+        {activeTab === 'goals' && <section className="tab-panel"><GoalsPage /></section>}
+        {activeTab === 'recurring' && <section className="tab-panel"><RecurringPage /></section>}
+        {activeTab === 'debts' && <section className="tab-panel"><DebtsPage /></section>}
+        {activeTab === 'categories' && <section className="tab-panel"><CategoriesPage /></section>}
       </main>
-    </div>
+    </>
   );
 }
 

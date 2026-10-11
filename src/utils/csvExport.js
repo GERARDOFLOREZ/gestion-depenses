@@ -1,25 +1,24 @@
-import { getCategoryById } from '../data/categories';
-
-export function exportExpensesToCSV(expenses) {
+export function exportExpensesToCSV(expenses, { getCategory, getAccount } = {}) {
   if (expenses.length === 0) return;
 
-  const headers = ['Libellé', 'Montant (€)', 'Catégorie', 'Date'];
+  const headers = ['Libellé', 'Montant', 'Devise', 'Catégorie', 'Compte', 'Date'];
 
   const rows = expenses.map((exp) => {
-    const category = getCategoryById(exp.category);
+    const category = getCategory ? getCategory(exp.category) : { label: exp.category };
+    const account = getAccount ? getAccount(exp.account_id) : null;
     return [
       escapeCSVValue(exp.label),
       exp.amount,
+      account?.currency || '',
       escapeCSVValue(category.label),
+      escapeCSVValue(account?.name || ''),
       exp.date,
     ];
   });
 
-  const csvContent = [headers, ...rows]
-    .map((row) => row.join(';'))
-    .join('\n');
+  const csvContent = [headers, ...rows].map((row) => row.join(';')).join('\n');
 
-  const blob = new Blob(['\uFEFF' + csvContent], {
+  const blob = new Blob(['﻿' + csvContent], {
     type: 'text/csv;charset=utf-8;',
   });
 

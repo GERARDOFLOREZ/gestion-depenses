@@ -1,9 +1,13 @@
 import { useExpenses } from '../hooks/useExpenses';
 import { exportExpensesToCSV } from '../utils/csvExport';
+import { useAccounts } from '../hooks/useAccounts';
+import { useCategories } from '../hooks/useCategories';
 import ExpenseItem from './ExpenseItem';
 
 function ExpenseList({ onEdit }) {
   const { expenses } = useExpenses();
+  const { getAccount } = useAccounts();
+  const { getExpenseCategory } = useCategories();
 
   if (expenses.length === 0) {
     return (
@@ -14,7 +18,7 @@ function ExpenseList({ onEdit }) {
   }
 
   const handleExport = () => {
-    exportExpensesToCSV(expenses);
+    exportExpensesToCSV(expenses, { getCategory: getExpenseCategory, getAccount });
   };
 
   return (

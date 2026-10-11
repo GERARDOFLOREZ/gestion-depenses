@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
-import { useCurrency } from '../hooks/useCurrency';
+import { useAccounts } from '../hooks/useAccounts';
+import { useCategories } from '../hooks/useCategories';
+import { useView } from '../hooks/useView';
 import { CATEGORIES } from '../data/categories';
 import { getTodayISO } from '../utils/formatters';
 
@@ -9,13 +11,19 @@ const emptyForm = {
   amount: '',
   category: CATEGORIES[0].id,
   date: getTodayISO(),
+  account_id: '',
 };
 
 function ExpenseForm({ editingExpense, onFinishEdit }) {
   const { addExpense, updateExpense } = useExpenses();
-  const { currency } = useCurrency();
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
+  const { accounts, getAccountCurrency } = useAccounts();
+  const { expenseCategories } = useCategories();
+  const { accountId } = useView();
+  const defaultAccountId = accountId !== 'all' ? accountId : accounts[0]?.id || '';
+  const accountValue = form.account_id || defaultAccountId;
+  const currency = getAccountCurrency(accountValue);
 
   const isEditing = Boolean(editingExpense);
 
@@ -26,6 +34,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
         amount: editingExpense.amount,
         category: editingExpense.category,
         date: editingExpense.date,
+        account_id: editingExpense.account_id || '',
       });
     } else {
       setForm(emptyForm);
@@ -55,6 +64,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       amount: Number(form.amount),
       category: form.category,
       date: form.date,
+      ...(accountValue ? { account_id: accountValue } : {}),
     };
 
     if (isEditing) {
@@ -111,13 +121,31 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
           value={form.category}
           onChange={handleChange}
         >
-          {CATEGORIES.map((cat) => (
+          {expenseCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.label}
             </option>
           ))}
         </select>
       </div>
+
+      {accounts.length > 0 && (
+        <div className="form-group">
+          <label htmlFor="expense-account">Compte</label>
+          <select
+            id="expense-account"
+            name="account_id"
+            value={accountValue}
+            onChange={handleChange}
+          >
+            {accounts.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name} ({a.currency})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="date">Date</label>

@@ -977,3 +977,173 @@ body { color: var(--text); }
   .balance-item { flex-direction: row; justify-content: space-between; align-items: center; }
   .nav-tab { font-size: 0.72rem; padding: 0.55rem 0.3rem; }
 }
+
+
+/* =====================================================
+   NOUVELLES SECTIONS : vue, comptes, objectifs, etc.
+   ===================================================== */
+
+.header-scope { font-size: 0.8rem; opacity: 0.75; margin-top: 0.15rem; }
+.balance-item .balance-value + .balance-value { margin-top: -0.05rem; }
+
+.hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.9rem; }
+.section-title { font-size: 1rem; margin: 1.25rem 0 0.6rem; color: var(--green-900); }
+
+.db-notice {
+  background: #fff7e0;
+  border: 1px solid #f0d78a;
+  color: #7a5b00;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.db-notice code { background: rgba(0, 0, 0, 0.06); padding: 0.05rem 0.35rem; border-radius: 6px; }
+
+/* Barre mois + compte */
+.view-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: var(--shadow);
+}
+.month-nav button {
+  border: none;
+  background: transparent;
+  color: var(--green-700);
+  font-size: 1.2rem;
+  font-weight: 700;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+}
+.month-nav button:hover:not(:disabled) { background: var(--green-100); }
+.month-nav button:disabled { opacity: 0.3; cursor: default; }
+.month-nav .month-toggle { width: auto; padding: 0 0.7rem; font-size: 0.78rem; background: var(--green-100); }
+.month-label { min-width: 8.5rem; text-align: center; font-weight: 600; font-size: 0.9rem; }
+.account-select {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 0.88rem;
+  max-width: 100%;
+}
+
+/* Formulaires : lignes à 2 colonnes */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.form-row .form-group { min-width: 0; }
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  background: var(--bg);
+  padding: 0.3rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.expense-form .segmented button {
+  width: auto;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  padding: 0.55rem;
+  font-size: 0.88rem;
+}
+.expense-form .segmented button.on {
+  background: var(--card);
+  color: var(--green-700);
+  box-shadow: var(--shadow);
+}
+.expense-form .segmented button:hover { transform: none; background: var(--card); }
+
+/* Comptes */
+.account-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.account-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
+.account-row + .account-row { border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.account-icon {
+  width: 2.4rem; height: 2.4rem; border-radius: 12px;
+  background: var(--green-100);
+  display: grid; place-items: center; font-size: 1.15rem;
+}
+.account-info { flex: 1; min-width: 0; }
+.account-balance { font-weight: 700; white-space: nowrap; color: var(--green-700); }
+.account-balance.negative { color: var(--red); }
+
+/* Objectifs / dettes */
+.goal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+.goal-card.is-paused, .expense-item.is-paused { opacity: 0.6; }
+.goal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.7rem; }
+.goal-figures { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-top: 0.45rem; }
+.goal-figures strong { color: var(--text); }
+.progress-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--green-600), #4caf50); border-radius: 999px; transition: width 0.3s ease; }
+.progress-fill.done { background: linear-gradient(90deg, #f9a825, #fbc02d); }
+.inline-add { display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.inline-add input { flex: 1; min-width: 120px; padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 10px; background: #fafcfa; outline: none; }
+.inline-add input:focus { border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15); }
+.inline-add button {
+  padding: 0.5rem 0.9rem; border: none; border-radius: 10px;
+  background: var(--green-600); color: #fff; font-weight: 600; font-size: 0.85rem;
+}
+.inline-add button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.debt-totals { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-weight: 600; padding: 0.2rem 0; }
+.balance-income-text { color: var(--green-600); }
+.balance-expense-text { color: var(--red); }
+
+/* Catégories */
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 0.3rem 0.75rem; border-radius: 999px;
+}
+.cat-chip button { background: rgba(255, 255, 255, 0.25); border: none; color: #fff; width: 1.2rem; height: 1.2rem; border-radius: 50%; font-size: 0.65rem; line-height: 1; }
+.swatches { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.expense-form .swatch { width: 2rem; height: 2rem; padding: 0; border-radius: 50%; border: 3px solid transparent; box-shadow: none; }
+.expense-form .swatch.on { border-color: var(--text); }
+.expense-form .swatch:hover { transform: scale(1.08); box-shadow: none; }
+
+.auth-forgot { text-align: right; margin: -0.4rem 0 0.4rem; font-size: 0.82rem; }
+
+/* Onglets nombreux : défilement horizontal propre */
+.nav-tabs { overflow-x: auto; scrollbar-width: none; }
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab { flex: 0 0 auto; }
+
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .nav-tab { font-size: 0.78rem; padding: 0.55rem 0.7rem; }
+  .month-label { min-width: 7rem; }
+  .view-bar { flex-direction: column; align-items: stretch; }
+  .account-select { width: 100%; }
+}
+
+/* Correctifs */
+.app-header .header-scope { color: rgba(255, 255, 255, 0.75); font-size: 0.8rem; font-weight: 500; }
+.summary .currency-selector { color: var(--muted); }
+.summary .currency-selector select {
+  background: #fafcfa;
+  color: var(--text);
+  border: 1px solid var(--border);
+}

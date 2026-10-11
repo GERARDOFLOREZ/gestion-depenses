@@ -7,6 +7,8 @@ import { ExpenseProvider } from './context/ExpenseContext.jsx';
 import { IncomeProvider } from './context/IncomeContext.jsx';
 import { BudgetProvider } from './context/BudgetContext.jsx';
 import { CurrencyProvider } from './context/CurrencyContext.jsx';
+import { ExtrasProvider } from './context/ExtrasContext.jsx';
+import { ViewProvider } from './context/ViewContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,7 +17,11 @@ createRoot(document.getElementById('root')).render(
         <ExpenseProvider>
           <IncomeProvider>
             <BudgetProvider>
-              <App />
+              <ExtrasProvider>
+                <ViewProvider>
+                  <App />
+                </ViewProvider>
+              </ExtrasProvider>
             </BudgetProvider>
           </IncomeProvider>
         </ExpenseProvider>
@@ -23,3 +29,10 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </StrictMode>
 );
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.error('Service worker non enregistré :', err);
+    });
+  });
+}

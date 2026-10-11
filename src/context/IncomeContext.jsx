@@ -2,12 +2,20 @@ import { createContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
 
+export const defaultIncomeFilters = {
+  category: 'all',
+  startDate: '',
+  endDate: '',
+  search: '',
+};
+
 export const IncomeContext = createContext(null);
 
 export function IncomeProvider({ children }) {
   const { user } = useAuth();
   const [incomes, setIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState(defaultIncomeFilters);
 
   const fetchIncomes = useCallback(async () => {
     if (!user) {
@@ -73,7 +81,7 @@ export function IncomeProvider({ children }) {
 
   return (
     <IncomeContext.Provider
-      value={{ incomes, loading, addIncome, updateIncome, deleteIncome }}
+      value={{ incomes, loading, filters, setFilters, refetch: fetchIncomes, addIncome, updateIncome, deleteIncome }}
     >
       {children}
     </IncomeContext.Provider>

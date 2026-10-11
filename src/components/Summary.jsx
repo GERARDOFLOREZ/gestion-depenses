@@ -1,21 +1,29 @@
 import { useMemo } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
-import { useCurrency } from '../hooks/useCurrency';
-import { CATEGORIES } from '../data/categories';
+import { useView } from '../hooks/useView';
+import { useCategories } from '../hooks/useCategories';
+import { getCurrencyByCode } from '../data/currencies';
+import MixedCurrencyNotice from './MixedCurrencyNotice';
 import { formatAmount } from '../utils/formatters';
 
 function Summary() {
   const { expenses, filteredTotalAmount } = useExpenses();
-  const { currency } = useCurrency();
+  const { viewCurrencyCode } = useView();
+  const { expenseCategories } = useCategories();
+  const currency = getCurrencyByCode(viewCurrencyCode || 'EUR');
 
   const totalsByCategory = useMemo(() => {
-    return CATEGORIES.map((cat) => {
+    return expenseCategories.map((cat) => {
       const total = expenses
         .filter((exp) => exp.category === cat.id)
         .reduce((sum, exp) => sum + Number(exp.amount), 0);
       return { ...cat, total };
     }).filter((cat) => cat.total > 0);
-  }, [expenses]);
+  }, [expenses, expenseCategories]);
+
+  if (!viewCurrencyCode) {
+    return <MixedCurrencyNotice title="Résumé" />;
+  }
 
   if (expenses.length === 0) {
     return null;

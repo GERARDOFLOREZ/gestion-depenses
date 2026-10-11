@@ -1,22 +1,30 @@
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../hooks/useExpenses';
-import { useCurrency } from '../hooks/useCurrency';
-import { CATEGORIES } from '../data/categories';
+import { useView } from '../hooks/useView';
+import { useCategories } from '../hooks/useCategories';
+import { getCurrencyByCode } from '../data/currencies';
+import MixedCurrencyNotice from './MixedCurrencyNotice';
 import { formatAmount } from '../utils/formatters';
 
 function ExpenseChart() {
   const { expenses } = useExpenses();
-  const { currency } = useCurrency();
+  const { viewCurrencyCode } = useView();
+  const { expenseCategories } = useCategories();
+  const currency = getCurrencyByCode(viewCurrencyCode || 'EUR');
 
   const chartData = useMemo(() => {
-    return CATEGORIES.map((cat) => {
+    return expenseCategories.map((cat) => {
       const total = expenses
         .filter((exp) => exp.category === cat.id)
         .reduce((sum, exp) => sum + Number(exp.amount), 0);
       return { name: cat.label, value: total, color: cat.color };
     }).filter((entry) => entry.value > 0);
-  }, [expenses]);
+  }, [expenses, expenseCategories]);
+
+  if (!viewCurrencyCode) {
+    return <MixedCurrencyNotice title="Répartition des dépenses" />;
+  }
 
   if (chartData.length === 0) {
     return null;

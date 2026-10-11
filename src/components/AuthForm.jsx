@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 function AuthForm() {
-  const { signUp, signIn } = useAuth();
+  const { signUp, signIn, resetPassword } = useAuth();
   const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,11 +11,28 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
 
   const isSignUp = mode === 'signup';
+  const isForgot = mode === 'forgot';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setInfoMessage('');
+
+    if (isForgot) {
+      if (!email) {
+        setError('Entrez votre adresse e-mail.');
+        return;
+      }
+      setLoading(true);
+      const { error } = await resetPassword(email);
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+      } else {
+        setInfoMessage('Si un compte existe pour cette adresse, un lien de réinitialisation vient d\'être envoyé.');
+      }
+      return;
+    }
 
     if (!email || !password) {
       setError('Email et mot de passe sont obligatoires.');
@@ -50,7 +67,7 @@ function AuthForm() {
     <div className="auth-page">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1>💰 Gestion des finances</h1>
-        <h2>{isSignUp ? 'Créer un compte' : 'Se connecter'}</h2>
+        <h2>{isForgot ? 'Mot de passe oublié' : isSignUp ? 'Créer un compte' : 'Se connecter'}</h2>
 
         {error && <p className="form-error">{error}</p>}
         {infoMessage && <p className="form-info">{infoMessage}</p>}
@@ -67,6 +84,7 @@ function AuthForm() {
           />
         </div>
 
+        {!isForgot && (
         <div className="form-group">
           <label htmlFor="auth-password">Mot de passe</label>
           <input
@@ -78,23 +96,32 @@ function AuthForm() {
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
           />
         </div>
+        )}
+
+        {mode === 'signin' && (
+          <p className="auth-forgot">
+            <button type="button" className="auth-switch-btn" onClick={() => { setMode('forgot'); setError(''); setInfoMessage(''); }}>
+              Mot de passe oublié ?
+            </button>
+          </p>
+        )}
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Chargement...' : isSignUp ? "S'inscrire" : 'Se connecter'}
+          {loading ? 'Chargement...' : isForgot ? 'Envoyer le lien' : isSignUp ? "S'inscrire" : 'Se connecter'}
         </button>
 
         <p className="auth-switch">
-          {isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
+          {isForgot ? 'Vous vous souvenez ?' : isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
           <button
             type="button"
             className="auth-switch-btn"
             onClick={() => {
-              setMode(isSignUp ? 'signin' : 'signup');
+              setMode(isForgot || isSignUp ? 'signin' : 'signup');
               setError('');
               setInfoMessage('');
             }}
           >
-            {isSignUp ? 'Se connecter' : "S'inscrire"}
+            {isForgot || isSignUp ? 'Se connecter' : "S'inscrire"}
           </button>
         </p>
       </form>

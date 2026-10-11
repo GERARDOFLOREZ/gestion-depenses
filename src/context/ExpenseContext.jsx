@@ -2,12 +2,20 @@ import { createContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
 
+export const defaultExpenseFilters = {
+  category: 'all',
+  startDate: '',
+  endDate: '',
+  search: '',
+};
+
 export const ExpenseContext = createContext(null);
 
 export function ExpenseProvider({ children }) {
   const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState(defaultExpenseFilters);
 
   const fetchExpenses = useCallback(async () => {
     if (!user) {
@@ -73,7 +81,7 @@ export function ExpenseProvider({ children }) {
 
   return (
     <ExpenseContext.Provider
-      value={{ expenses, loading, addExpense, updateExpense, deleteExpense }}
+      value={{ expenses, loading, filters, setFilters, refetch: fetchExpenses, addExpense, updateExpense, deleteExpense }}
     >
       {children}
     </ExpenseContext.Provider>

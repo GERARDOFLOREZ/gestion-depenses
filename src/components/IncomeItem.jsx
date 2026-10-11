@@ -1,10 +1,15 @@
 import { useIncomes } from '../hooks/useIncomes';
-import { getIncomeCategoryById } from '../data/incomeCategories';
+import { useAccounts } from '../hooks/useAccounts';
+import { useCategories } from '../hooks/useCategories';
 import { formatAmount, formatDate } from '../utils/formatters';
 
 function IncomeItem({ income, onEdit }) {
   const { deleteIncome } = useIncomes();
-  const category = getIncomeCategoryById(income.category);
+  const { getAccountCurrency, getAccount } = useAccounts();
+  const { getIncomeCategory } = useCategories();
+  const currency = getAccountCurrency(income.account_id);
+  const category = getIncomeCategory(income.category);
+  const account = getAccount(income.account_id);
 
   const handleDelete = () => {
     if (window.confirm(`Supprimer le revenu "${income.label}" ?`)) {
@@ -23,11 +28,14 @@ function IncomeItem({ income, onEdit }) {
 
       <div className="expense-info">
         <p className="expense-label">{income.label}</p>
-        <p className="expense-date">{formatDate(income.date)}</p>
+        <p className="expense-date">
+          {formatDate(income.date)}
+          {account ? ` · ${account.name}` : ''}
+        </p>
       </div>
 
       <span className="expense-amount income-amount">
-        + {formatAmount(income.amount)}
+        + {formatAmount(income.amount, currency)}
       </span>
 
       <button

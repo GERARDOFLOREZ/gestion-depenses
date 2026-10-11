@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useBudgets } from '../hooks/useBudgets';
 import { useCurrency } from '../hooks/useCurrency';
-import { CATEGORIES } from '../data/categories';
+import { useCategories } from '../hooks/useCategories';
 import { formatAmount } from '../utils/formatters';
 
 function BudgetManager() {
   const { budgets, setBudget, removeBudget } = useBudgets();
   const { currency } = useCurrency();
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].id);
+  const { expenseCategories } = useCategories();
+  const [selectedCategory, setSelectedCategory] = useState('alimentation');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
@@ -24,11 +25,12 @@ function BudgetManager() {
     setError('');
   };
 
-  const definedBudgets = CATEGORIES.filter((cat) => budgets[cat.id] !== undefined);
+  const definedBudgets = expenseCategories.filter((cat) => budgets[cat.id] !== undefined);
 
   return (
     <section className="budget-manager">
-      <h2>Budgets mensuels</h2>
+      <h2>Budgets mensuels ({currency.code})</h2>
+      <p className="hint">Les budgets sont exprimés dans votre devise principale ({currency.label}). Seules les dépenses des comptes dans cette devise sont comptées.</p>
 
       <form className="budget-manager-form" onSubmit={handleSubmit}>
         {error && <p className="form-error">{error}</p>}
@@ -38,7 +40,7 @@ function BudgetManager() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
-            {CATEGORIES.map((cat) => (
+            {expenseCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
               </option>

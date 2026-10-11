@@ -6,7 +6,7 @@ function CurrencySelector() {
 
   return (
     <div className="currency-selector">
-      <label htmlFor="currency-select">Devise</label>
+      <label htmlFor="currency-select">Devise principale</label>
       <select
         id="currency-select"
         value={currencyCode}

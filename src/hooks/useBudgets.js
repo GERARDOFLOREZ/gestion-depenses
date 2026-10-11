@@ -1,7 +1,10 @@
 import { useContext, useMemo } from 'react';
 import { BudgetContext } from '../context/BudgetContext';
 import { ExpenseContext } from '../context/ExpenseContext';
-import { CATEGORIES } from '../data/categories';
+import { useExtras } from './useExtras';
+import { useCategories } from './useCategories';
+import { useCurrency } from './useCurrency';
+import { getCurrencyByCode } from '../data/currencies';
 
 export function useBudgets() {
   const budgetContext = useContext(BudgetContext);
@@ -14,7 +17,19 @@ export function useBudgets() {
   }
 
   const { budgets, loading, setBudget, removeBudget } = budgetContext;
-  const { expenses } = expenseContext;
+  const { expenses: allExpenses } = expenseContext;
+  const { accounts } = useExtras();
+  const { expenseCategories } = useCategories();
+  const { currencyCode } = useCurrency();
+
+  // Les budgets sont exprimés dans la devise principale : seules les dépenses
+  // des comptes dans cette devise (ou sans compte) sont comptabilisées.
+  const expenses = useMemo(() => {
+    return allExpenses.filter((exp) => {
+      const account = accounts.rows.find((a) => a.id === exp.account_id);
+      return getCurrencyByCode(account?.currency || currencyCode).code === currencyCode;
+    });
+  }, [allExpenses, accounts.rows, currencyCode]);
 
   const currentMonthExpenses = useMemo(() => {
     const now = new Date();
@@ -31,7 +46,7 @@ export function useBudgets() {
   }, [expenses]);
 
   const budgetStatus = useMemo(() => {
-    return CATEGORIES.filter((cat) => budgets[cat.id] !== undefined).map((cat) => {
+    return expenseCategories.filter((cat) => budgets[cat.id] !== undefined).map((cat) => {
       const spent = currentMonthExpenses
         .filter((exp) => exp.category === cat.id)
         .reduce((sum, exp) => sum + Number(exp.amount), 0);
@@ -48,7 +63,7 @@ export function useBudgets() {
         isOverBudget: spent > budgetAmount,
       };
     });
-  }, [budgets, currentMonthExpenses]);
+  }, [budgets, currentMonthExpenses, expenseCategories]);
 
   return {
     budgets,

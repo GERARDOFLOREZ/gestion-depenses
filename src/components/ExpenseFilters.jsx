@@ -1,8 +1,9 @@
 import { useExpenses } from '../hooks/useExpenses';
-import { CATEGORIES } from '../data/categories';
+import { useCategories } from '../hooks/useCategories';
 
 function ExpenseFilters() {
   const { filters, updateFilter, resetFilters } = useExpenses();
+  const { expenseCategories } = useCategories();
 
   const handleChange = (e) => {
     updateFilter(e.target.name, e.target.value);
@@ -37,7 +38,7 @@ function ExpenseFilters() {
           onChange={handleChange}
         >
           <option value="all">Toutes</option>
-          {CATEGORIES.map((cat) => (
+          {expenseCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.label}
             </option>

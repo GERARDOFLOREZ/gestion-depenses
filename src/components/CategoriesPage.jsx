@@ -1,0 +1,91 @@
+import { useState } from 'react';
+import { useExtras } from '../hooks/useExtras';
+import { useCategories } from '../hooks/useCategories';
+import { CATEGORIES } from '../data/categories';
+import { INCOME_CATEGORIES } from '../data/incomeCategories';
+import DbNotice from './DbNotice';
+
+const PALETTE = ['#2e7d32', '#0288d1', '#7b1fa2', '#f57c00', '#d81b60', '#00897b', '#5d4037', '#455a64'];
+
+function Chip({ cat, onDelete }) {
+  return (
+    <span className="cat-chip" style={{ backgroundColor: cat.color }}>
+      {cat.label}
+      {onDelete && (
+        <button type="button" onClick={() => onDelete(cat)} aria-label={`Supprimer ${cat.label}`}>✕</button>
+      )}
+    </span>
+  );
+}
+
+function CategoriesPage() {
+  const { customCategories } = useExtras();
+  const { customList } = useCategories();
+  const [form, setForm] = useState({ kind: 'expense', label: '', color: PALETTE[0] });
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.label.trim()) return setError('Le nom est obligatoire.');
+    const { error: err } = await customCategories.add({
+      kind: form.kind,
+      label: form.label.trim(),
+      color: form.color,
+    });
+    if (err) return setError("Impossible d'enregistrer (base de données à mettre à jour ?).");
+    setForm({ ...form, label: '' });
+    setError('');
+  };
+
+  const handleDelete = (cat) => {
+    if (window.confirm(`Supprimer la catégorie "${cat.label}" ?\nLes opérations existantes apparaîtront dans « Autre ».`)) {
+      customCategories.remove(cat.rowId);
+    }
+  };
+
+  return (
+    <>
+      <DbNotice error={customCategories.error} />
+
+      <form className="expense-form" onSubmit={handleSubmit}>
+        <h2>Nouvelle catégorie</h2>
+        {error && <p className="form-error">{error}</p>}
+        <div className="segmented">
+          <button type="button" className={form.kind === 'expense' ? 'on' : ''} onClick={() => setForm({ ...form, kind: 'expense' })}>💸 Dépense</button>
+          <button type="button" className={form.kind === 'income' ? 'on' : ''} onClick={() => setForm({ ...form, kind: 'income' })}>💵 Revenu</button>
+        </div>
+        <div className="form-group">
+          <label htmlFor="cat-label">Nom</label>
+          <input id="cat-label" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Ex : Abonnements, Dons, Primes..." />
+        </div>
+        <div className="form-group">
+          <label>Couleur</label>
+          <div className="swatches">
+            {PALETTE.map((c) => (
+              <button key={c} type="button" className={`swatch ${form.color === c ? 'on' : ''}`} style={{ backgroundColor: c }} onClick={() => setForm({ ...form, color: c })} aria-label={`Couleur ${c}`} />
+            ))}
+          </div>
+        </div>
+        <button type="submit">Ajouter la catégorie</button>
+      </form>
+
+      <section className="summary">
+        <h2>Catégories de dépenses</h2>
+        <div className="chips">
+          {CATEGORIES.map((c) => (<Chip key={c.id} cat={c} />))}
+          {customList.filter((c) => c.kind === 'expense').map((c) => (<Chip key={c.id} cat={c} onDelete={handleDelete} />))}
+        </div>
+      </section>
+
+      <section className="summary">
+        <h2>Catégories de revenus</h2>
+        <div className="chips">
+          {INCOME_CATEGORIES.map((c) => (<Chip key={c.id} cat={c} />))}
+          {customList.filter((c) => c.kind === 'income').map((c) => (<Chip key={c.id} cat={c} onDelete={handleDelete} />))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default CategoriesPage;
