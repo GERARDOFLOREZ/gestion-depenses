@@ -56,15 +56,18 @@ function App() {
           </div>
         </div>
         <div className="balance-summary">
-          <span className="balance-item balance-income">
-            + {formatAmount(totalIncomes, currency)}
-          </span>
-          <span className="balance-item balance-expense">
-            − {formatAmount(totalExpenses, currency)}
-          </span>
-          <span className={`balance-item balance-total ${balance >= 0 ? 'positive' : 'negative'}`}>
-            Solde : {formatAmount(balance, currency)}
-          </span>
+          <div className="balance-item balance-income">
+            <span className="balance-label">Revenus</span>
+            <span className="balance-value">+ {formatAmount(totalIncomes, currency)}</span>
+          </div>
+          <div className="balance-item balance-expense">
+            <span className="balance-label">Dépenses</span>
+            <span className="balance-value">− {formatAmount(totalExpenses, currency)}</span>
+          </div>
+          <div className={`balance-item balance-total ${balance >= 0 ? 'positive' : 'negative'}`}>
+            <span className="balance-label">Solde</span>
+            <span className="balance-value">{formatAmount(balance, currency)}</span>
+          </div>
         </div>
       </header>
 

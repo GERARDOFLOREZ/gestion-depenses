@@ -776,3 +776,204 @@
 .logout-btn:hover {
   background-color: #fdecea;
 }
+
+/* =====================================================
+   THÈME MODERNE (surcharge) — vert profond + blanc cassé
+   ===================================================== */
+
+:root {
+  --green-900: #0f3d27;
+  --green-700: #1f6b43;
+  --green-600: #2e7d32;
+  --green-100: #e3f1e6;
+  --bg: #eef3ef;
+  --card: #ffffff;
+  --text: #16241c;
+  --muted: #6a7a70;
+  --border: #dde6df;
+  --red: #c62828;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(15, 61, 39, 0.05), 0 8px 24px rgba(15, 61, 39, 0.07);
+}
+
+body { color: var(--text); }
+
+.app { max-width: 760px; padding: 1.5rem 1rem 4rem; }
+
+/* ---- En-tête ---- */
+.app-header {
+  text-align: left;
+  background: linear-gradient(135deg, var(--green-900), var(--green-700));
+  color: #fff;
+  border-radius: 22px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 12px 32px rgba(15, 61, 39, 0.25);
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.app-header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+
+.header-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.currency-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.currency-selector select {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.85rem;
+  outline: none;
+}
+.currency-selector select option { color: #16241c; }
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  transition: background 0.15s ease;
+}
+.logout-btn:hover { background: rgba(255, 255, 255, 0.22); }
+
+.balance-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  justify-content: stretch;
+}
+
+.balance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 600;
+}
+.balance-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.75; }
+.balance-value { font-size: 1.05rem; font-weight: 700; white-space: nowrap; }
+.balance-income .balance-value { color: #9be7a4; }
+.balance-expense .balance-value { color: #ffb4ae; }
+.balance-total.positive, .balance-total.negative { background: #fff; padding: 0.85rem 1rem; border-radius: 14px; }
+.balance-total .balance-label { opacity: 0.6; }
+.balance-total.positive { color: var(--green-600); }
+.balance-total.negative { color: var(--red); }
+.balance-total .balance-value { color: inherit; }
+
+/* ---- Onglets (style "pilule") ---- */
+.nav-tabs {
+  gap: 0.35rem;
+  background: var(--card);
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
+}
+.nav-tab {
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  color: var(--muted);
+}
+.nav-tab:hover { background: var(--bg); color: var(--text); }
+.nav-tab.active { background: var(--green-600); color: #fff; border-bottom: none; box-shadow: 0 4px 12px rgba(46, 125, 50, 0.35); }
+
+/* ---- Cartes ---- */
+.expense-form, .income-form, .expense-filters, .summary, .expense-chart,
+.budget-manager, .budget-overview {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.expense-form h2, .income-form h2, .summary h2, .expense-chart h2,
+.budget-manager h2, .budget-overview h2, .expense-list-section h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Champs ---- */
+.form-group input, .form-group select,
+.filter-group input, .filter-group select,
+.budget-form-row input, .budget-form-row select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafcfa;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.form-group input:focus, .form-group select:focus,
+.filter-group input:focus, .filter-group select:focus,
+.budget-form-row input:focus, .budget-form-row select:focus {
+  border-color: var(--green-600);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+  background: #fff;
+}
+
+/* ---- Boutons ---- */
+.expense-form button, .income-form button, .budget-form-row button,
+.auth-form button[type="submit"] {
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+.expense-form button:hover, .income-form button:hover, .budget-form-row button:hover,
+.auth-form button[type="submit"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #348a39, var(--green-700));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.32);
+}
+.form-actions .cancel-btn { box-shadow: none; background: transparent; }
+
+/* ---- Listes ---- */
+.expense-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  box-shadow: none;
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+.expense-item:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+
+/* ---- Authentification ---- */
+.auth-page {
+  background: linear-gradient(135deg, var(--green-900), var(--green-700) 60%, #3a9a5d);
+}
+.auth-form {
+  border-radius: 22px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+}
+.auth-form h1 { font-weight: 800; letter-spacing: -0.02em; color: var(--green-900); }
+
+/* ---- Mobile ---- */
+@media (max-width: 640px) {
+  .app-header { padding: 1.1rem; border-radius: 18px; }
+  .app-header h1 { font-size: 1.25rem; }
+  .balance-summary { grid-template-columns: 1fr; gap: 0.5rem; align-items: stretch; }
+  .balance-item { flex-direction: row; justify-content: space-between; align-items: center; }
+  .nav-tab { font-size: 0.72rem; padding: 0.55rem 0.3rem; }
+}
