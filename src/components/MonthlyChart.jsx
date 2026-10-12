@@ -6,7 +6,6 @@ import { useAccounts } from '../hooks/useAccounts';
 import { useView } from '../hooks/useView';
 import { getCurrencyByCode } from '../data/currencies';
 import { formatAmount, formatShortMonth, getMonthISO, shiftMonth } from '../utils/formatters';
-import MixedCurrencyNotice from './MixedCurrencyNotice';
 
 const MONTHS_SHOWN = 6;
 
@@ -29,8 +28,6 @@ function MonthlyChart() {
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allExpenses, allIncomes, month, accountId, viewCurrencyCode]);
-
-  if (!viewCurrencyCode) return <MixedCurrencyNotice title="Évolution mensuelle" />;
 
   const currency = getCurrencyByCode(viewCurrencyCode);
   const hasData = data.some((d) => d.Revenus > 0 || d.Dépenses > 0);

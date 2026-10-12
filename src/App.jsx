@@ -15,13 +15,12 @@ import ExpenseForm from './components/ExpenseForm';
 import ExpenseFilters from './components/ExpenseFilters';
 import BudgetManager from './components/BudgetManager';
 import BudgetOverview from './components/BudgetOverview';
-import Summary from './components/Summary';
+import CurrencySelector from './components/CurrencySelector';
 import ExpenseChart from './components/ExpenseChart';
 import MonthlyChart from './components/MonthlyChart';
 import BudgetAlertsBanner from './components/BudgetAlertsBanner';
 import BudgetToasts from './components/BudgetToasts';
 import { useBudgetToasts } from './hooks/useBudgetAlerts';
-import MixedCurrencyNotice from './components/MixedCurrencyNotice';
 import AccountBalances from './components/AccountBalances';
 import AccountsPage from './components/AccountsPage';
 import GoalsPage from './components/GoalsPage';
@@ -36,20 +35,21 @@ import './App.css';
 const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
 
 function Dashboard({ onSeeBudgets }) {
-  const { viewCurrencyCode } = useView();
+  const { viewCurrencyCode, isMixed } = useView();
   return (
     <section className="tab-panel">
+      <div className="currency-bar">
+        <CurrencySelector />
+        <p className="hint">
+          {isMixed
+            ? `Vos comptes ont des devises différentes : les graphiques sont en ${viewCurrencyCode}. Changez la devise ici, ou choisissez un compte.`
+            : 'Utilisée pour vos budgets et pour les nouveaux comptes.'}
+        </p>
+      </div>
       <BudgetAlertsBanner onSeeBudgets={onSeeBudgets} />
       <AccountBalances />
-      {viewCurrencyCode ? (
-        <>
-          <MonthlyChart />
-          <ExpenseChart />
-          <Summary />
-        </>
-      ) : (
-        <MixedCurrencyNotice title="Graphiques" />
-      )}
+      <MonthlyChart />
+      <ExpenseChart />
     </section>
   );
 }

@@ -1,57 +1,91 @@
 import { useMemo } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useExpenses } from '../hooks/useExpenses';
+import { useAccounts } from '../hooks/useAccounts';
 import { useView } from '../hooks/useView';
 import { useCategories } from '../hooks/useCategories';
 import { getCurrencyByCode } from '../data/currencies';
-import MixedCurrencyNotice from './MixedCurrencyNotice';
-import { formatAmount } from '../utils/formatters';
+import { formatAmount, formatMonthLabel } from '../utils/formatters';
 
 function ExpenseChart() {
   const { expenses } = useExpenses();
-  const { viewCurrencyCode } = useView();
+  const { getAccountCurrency } = useAccounts();
+  const { viewCurrencyCode, month } = useView();
   const { expenseCategories } = useCategories();
   const currency = getCurrencyByCode(viewCurrencyCode || 'EUR');
 
-  const chartData = useMemo(() => {
-    return expenseCategories.map((cat) => {
-      const total = expenses
-        .filter((exp) => exp.category === cat.id)
-        .reduce((sum, exp) => sum + Number(exp.amount), 0);
-      return { name: cat.label, value: total, color: cat.color };
-    }).filter((entry) => entry.value > 0);
-  }, [expenses, expenseCategories]);
+  const { rows, total } = useMemo(() => {
+    const inCurrency = expenses.filter(
+      (e) => getAccountCurrency(e.account_id).code === currency.code
+    );
+    const list = expenseCategories
+      .map((cat) => ({
+        id: cat.id,
+        name: cat.label,
+        color: cat.color,
+        value: inCurrency
+          .filter((e) => e.category === cat.id)
+          .reduce((sum, e) => sum + Number(e.amount), 0),
+      }))
+      .filter((r) => r.value > 0)
+      .sort((a, b) => b.value - a.value);
+    return { rows: list, total: list.reduce((s, r) => s + r.value, 0) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenses, expenseCategories, currency.code]);
 
-  if (!viewCurrencyCode) {
-    return <MixedCurrencyNotice title="Répartition des dépenses" />;
-  }
+  if (rows.length === 0) return null;
 
-  if (chartData.length === 0) {
-    return null;
-  }
+  const centerLabel = month === 'all' ? 'Total' : formatMonthLabel(month).split(' ')[0];
 
   return (
     <section className="expense-chart">
       <h2>Répartition des dépenses</h2>
-      <ResponsiveContainer width="100%" height={280}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={90}
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(value) => formatAmount(value, currency)} />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+
+      <div className="donut-layout">
+        <div className="donut-box">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={rows}
+                dataKey="value"
+                nameKey="name"
+                innerRadius="64%"
+                outerRadius="100%"
+                paddingAngle={rows.length > 1 ? 2 : 0}
+                startAngle={90}
+                endAngle={-270}
+                stroke="none"
+              >
+                {rows.map((r) => (
+                  <Cell key={r.id} fill={r.color} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => formatAmount(value, currency)} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="donut-center">
+            <span className="donut-center-label">{centerLabel}</span>
+            <strong>{formatAmount(total, currency)}</strong>
+          </div>
+        </div>
+
+        <ul className="donut-legend">
+          {rows.map((r) => (
+            <li key={r.id}>
+              <div className="donut-legend-head">
+                <span>{r.name}</span>
+                <span>{formatAmount(r.value, currency)}</span>
+              </div>
+              <div className="donut-legend-track">
+                <div
+                  className="donut-legend-fill"
+                  style={{ width: `${(r.value / total) * 100}%`, backgroundColor: r.color }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

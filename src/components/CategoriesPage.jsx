@@ -4,8 +4,7 @@ import { useCategories } from '../hooks/useCategories';
 import { CATEGORIES } from '../data/categories';
 import { INCOME_CATEGORIES } from '../data/incomeCategories';
 import DbNotice from './DbNotice';
-
-const PALETTE = ['#2e7d32', '#0288d1', '#7b1fa2', '#f57c00', '#d81b60', '#00897b', '#5d4037', '#455a64'];
+import ColorPicker from './ColorPicker';
 
 function Chip({ cat, onDelete }) {
   return (
@@ -21,7 +20,7 @@ function Chip({ cat, onDelete }) {
 function CategoriesPage() {
   const { customCategories } = useExtras();
   const { customList } = useCategories();
-  const [form, setForm] = useState({ kind: 'expense', label: '', color: PALETTE[0] });
+  const [form, setForm] = useState({ kind: 'expense', label: '', color: '#2e7d32' });
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
@@ -60,11 +59,7 @@ function CategoriesPage() {
         </div>
         <div className="form-group">
           <label>Couleur</label>
-          <div className="swatches">
-            {PALETTE.map((c) => (
-              <button key={c} type="button" className={`swatch ${form.color === c ? 'on' : ''}`} style={{ backgroundColor: c }} onClick={() => setForm({ ...form, color: c })} aria-label={`Couleur ${c}`} />
-            ))}
-          </div>
+          <ColorPicker value={form.color} onChange={(color) => setForm({ ...form, color })} />
         </div>
         <button type="submit">Ajouter la catégorie</button>
       </form>

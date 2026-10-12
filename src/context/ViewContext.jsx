@@ -19,7 +19,10 @@ export function ViewProvider({ children }) {
     ? selected.currency
     : codes.length <= 1
       ? codes[0] || currencyCode
-      : null;
+      : codes.includes(currencyCode)
+        ? currencyCode
+        : codes[0];
+  const isMixed = !selected && codes.length > 1;
 
   const matchesView = useCallback(
     (item) =>
@@ -29,8 +32,8 @@ export function ViewProvider({ children }) {
   );
 
   const value = useMemo(
-    () => ({ month, setMonth, accountId, setAccountId, viewCurrencyCode, matchesView }),
-    [month, accountId, viewCurrencyCode, matchesView]
+    () => ({ month, setMonth, accountId, setAccountId, viewCurrencyCode, isMixed, matchesView }),
+    [month, accountId, viewCurrencyCode, isMixed, matchesView]
   );
 
   return <ViewContext.Provider value={value}>{children}</ViewContext.Provider>;
