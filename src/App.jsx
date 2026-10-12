@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useExpenses } from './hooks/useExpenses';
 import { useAuth } from './hooks/useAuth';
 import { useView } from './hooks/useView';
@@ -9,6 +9,7 @@ import { formatAmount, formatMonthLabel } from './utils/formatters';
 import AuthForm from './components/AuthForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import NavTabs from './components/NavTabs';
+import { getMenuItem } from './data/menu';
 import ViewBar from './components/ViewBar';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseFilters from './components/ExpenseFilters';
@@ -89,6 +90,9 @@ function Shell({
 }) {
   useAutomation();
   useExpenses();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const current = getMenuItem(activeTab);
   const { month, accountId } = useView();
   const { getAccount } = useAccounts();
   const totals = useViewTotals();
@@ -101,10 +105,21 @@ function Shell({
     .join(' · ');
 
   return (
-    <>
+    <div className="app-layout">
+      <NavTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        open={menuOpen}
+        onClose={closeMenu}
+      />
+
+      <div className="app-content">
       <header className="app-header">
         <div className="app-header-top">
-          <div>
+          <button type="button" className="menu-btn" onClick={() => setMenuOpen(true)} aria-label="Ouvrir le menu">
+            ☰
+          </button>
+          <div className="header-title">
             <h1>💰 Gestion des finances</h1>
             <p className="header-scope">{scopeLabel}</p>
           </div>
@@ -138,7 +153,9 @@ function Shell({
         </div>
       </header>
 
-      <NavTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <h2 className="page-title">
+        {current?.icon} {current?.label}
+      </h2>
 
       {VIEW_TABS.includes(activeTab) && <ViewBar />}
 
@@ -176,7 +193,8 @@ function Shell({
         {activeTab === 'debts' && <section className="tab-panel"><DebtsPage /></section>}
         {activeTab === 'categories' && <section className="tab-panel"><CategoriesPage /></section>}
       </main>
-    </>
+      </div>
+    </div>
   );
 }
 

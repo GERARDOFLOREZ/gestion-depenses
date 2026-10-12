@@ -11,16 +11,17 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
   const { user } = useAuth();
   const userId = user?.id;
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(true);
+  const [loadedFor, setLoadedFor] = useState(null);
   const [error, setError] = useState(null);
 
   const refetch = useCallback(async () => {
     if (!userId) {
       setRows([]);
-      setLoading(false);
+      setFetching(false);
       return;
     }
-    setLoading(true);
+    setFetching(true);
     const { data, error: err } = await supabase
       .from(table)
       .select('*')
@@ -33,8 +34,12 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
       setError(null);
       setRows(data);
     }
-    setLoading(false);
+    setFetching(false);
+    setLoadedFor(userId);
   }, [table, orderBy, ascending, userId]);
+
+  // « en chargement » tant que les données de CET utilisateur n'ont pas été reçues
+  const loading = userId ? loadedFor !== userId || fetching : false;
 
   useEffect(() => {
     refetch();

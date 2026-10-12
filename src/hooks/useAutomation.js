@@ -54,6 +54,12 @@ export function useAutomation() {
     if (!ready || accounts.error || accounts.rows.length > 0 || bootstrapped.current) return;
     bootstrapped.current = true;
     (async () => {
+      // Garde-fou (autre appareil, chargement lent) : ne jamais créer de doublon.
+      const { data: existing } = await supabase.from('accounts').select('id').limit(1);
+      if (existing && existing.length > 0) {
+        accounts.refetch();
+        return;
+      }
       const { data, error } = await accounts.add({
         name: 'Compte principal',
         type: 'courant',
