@@ -1249,3 +1249,49 @@ body { color: var(--text); }
   0%, 100% { box-shadow: 0 4px 14px rgba(255, 179, 0, 0.55), 0 0 0 3px rgba(255, 255, 255, 0.18); }
   50% { box-shadow: 0 4px 14px rgba(255, 179, 0, 0.55), 0 0 0 9px rgba(255, 213, 79, 0.35); }
 }
+
+/* =====================================================
+   ALERTES BUDGET
+   ===================================================== */
+.budget-warning { font-size: 0.8rem; color: #e65100; font-weight: 600; margin-top: 0.3rem; }
+
+.alert-banner {
+  background: #fff8e8;
+  border: 1px solid #f3d78b;
+  border-left: 5px solid #f57c00;
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.alert-banner h2 { font-size: 1rem; margin-bottom: 0.65rem; color: #8a4b00; }
+.alert-banner ul { display: flex; flex-direction: column; gap: 0.55rem; }
+.alert-item { display: flex; flex-direction: column; gap: 0.1rem; font-size: 0.86rem; padding-left: 0.7rem; border-left: 3px solid #f57c00; }
+.alert-item strong { color: #6b3a00; }
+.alert-item span { color: #5f5442; }
+.alert-item.alert-over { border-left-color: #c62828; }
+.alert-item.alert-over strong { color: #a31515; }
+.alert-link { margin-top: 0.8rem; background: none; border: none; color: #8a4b00; font-weight: 700; font-size: 0.85rem; padding: 0; text-decoration: underline; }
+
+.toast-stack {
+  position: fixed; left: 0; right: 0; bottom: 1rem; z-index: 60;
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  padding: 0 1rem; pointer-events: none;
+}
+.toast {
+  pointer-events: auto; cursor: pointer;
+  display: flex; align-items: flex-start; gap: 0.7rem;
+  width: min(100%, 440px);
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  animation: toast-in 0.25s ease;
+}
+.toast-over { background: linear-gradient(135deg, #b71c1c, #d32f2f); }
+.toast-warn { background: linear-gradient(135deg, #e65100, #f57c00); }
+.toast-icon { font-size: 1.4rem; line-height: 1.2; }
+.toast-title { font-weight: 800; font-size: 0.92rem; }
+.toast-text { font-size: 0.82rem; opacity: 0.95; margin-top: 0.15rem; }
+.toast-close { margin-left: auto; background: rgba(255, 255, 255, 0.22); border: none; color: #fff; width: 1.6rem; height: 1.6rem; border-radius: 50%; font-size: 0.7rem; flex: 0 0 auto; }
+@keyframes toast-in { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }

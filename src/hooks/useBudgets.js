@@ -61,6 +61,8 @@ export function useBudgets() {
         remaining: budgetAmount - spent,
         percentage: Math.min(percentage, 100),
         isOverBudget: spent > budgetAmount,
+        // « presque atteint » : il reste moins de 20 % du budget
+        isNearLimit: spent <= budgetAmount && budgetAmount > 0 && spent >= budgetAmount * 0.8,
       };
     });
   }, [budgets, currentMonthExpenses, expenseCategories]);

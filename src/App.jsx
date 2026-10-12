@@ -18,6 +18,9 @@ import BudgetOverview from './components/BudgetOverview';
 import Summary from './components/Summary';
 import ExpenseChart from './components/ExpenseChart';
 import MonthlyChart from './components/MonthlyChart';
+import BudgetAlertsBanner from './components/BudgetAlertsBanner';
+import BudgetToasts from './components/BudgetToasts';
+import { useBudgetToasts } from './hooks/useBudgetAlerts';
 import MixedCurrencyNotice from './components/MixedCurrencyNotice';
 import AccountBalances from './components/AccountBalances';
 import AccountsPage from './components/AccountsPage';
@@ -32,10 +35,11 @@ import './App.css';
 
 const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
 
-function Dashboard() {
+function Dashboard({ onSeeBudgets }) {
   const { viewCurrencyCode } = useView();
   return (
     <section className="tab-panel">
+      <BudgetAlertsBanner onSeeBudgets={onSeeBudgets} />
       <AccountBalances />
       {viewCurrencyCode ? (
         <>
@@ -90,6 +94,7 @@ function Shell({
 }) {
   useAutomation();
   useExpenses();
+  const { toasts, dismissToast } = useBudgetToasts();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const current = getMenuItem(activeTab);
@@ -161,7 +166,7 @@ function Shell({
       {VIEW_TABS.includes(activeTab) && <ViewBar />}
 
       <main className="app-main">
-        {activeTab === 'dashboard' && <Dashboard />}
+        {activeTab === 'dashboard' && <Dashboard onSeeBudgets={() => setActiveTab('budgets')} />}
 
         {activeTab === 'incomes' && (
           <section className="tab-panel">
@@ -172,6 +177,7 @@ function Shell({
 
         {activeTab === 'expenses' && (
           <section className="tab-panel">
+            <BudgetAlertsBanner onSeeBudgets={() => setActiveTab('budgets')} />
             <ExpenseForm editingExpense={editingExpense} onFinishEdit={() => setEditingExpense(null)} />
             <ExpenseFilters />
             <ExpenseList onEdit={setEditingExpense} />
@@ -195,6 +201,8 @@ function Shell({
         {activeTab === 'categories' && <section className="tab-panel"><CategoriesPage /></section>}
       </main>
       </div>
+
+      <BudgetToasts toasts={toasts} onClose={dismissToast} />
     </div>
   );
 }

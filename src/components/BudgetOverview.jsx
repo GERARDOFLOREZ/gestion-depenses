@@ -37,7 +37,7 @@ function BudgetOverview() {
                 className={`budget-bar-fill ${cat.isOverBudget ? 'over-budget' : ''}`}
                 style={{
                   width: `${cat.percentage}%`,
-                  backgroundColor: cat.isOverBudget ? '#c62828' : cat.color,
+                  backgroundColor: cat.isOverBudget ? '#c62828' : cat.isNearLimit ? '#f57c00' : cat.color,
                 }}
               />
             </div>
@@ -45,6 +45,10 @@ function BudgetOverview() {
             {cat.isOverBudget ? (
               <p className="budget-alert">
                 ⚠️ Dépassement de {formatAmount(Math.abs(cat.remaining), currency)}
+              </p>
+            ) : cat.isNearLimit ? (
+              <p className="budget-warning">
+                ⚠️ Attention : il ne reste que {formatAmount(cat.remaining, currency)} avant la limite
               </p>
             ) : (
               <p className="budget-remaining">
