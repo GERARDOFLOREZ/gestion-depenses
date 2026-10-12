@@ -117,7 +117,8 @@ function Shell({
       <header className="app-header">
         <div className="app-header-top">
           <button type="button" className="menu-btn" onClick={() => setMenuOpen(true)} aria-label="Ouvrir le menu">
-            ☰
+            <span className="menu-btn-icon">☰</span>
+            <span className="menu-btn-label">Menu</span>
           </button>
           <div className="header-title">
             <h1>💰 Gestion des finances</h1>

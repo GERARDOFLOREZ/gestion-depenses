@@ -1223,3 +1223,29 @@ body { color: var(--text); }
     box-shadow: var(--shadow);
   }
 }
+
+/* Bouton menu bien visible (mobile) : jaune ambre sur le bandeau vert */
+.menu-btn {
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.45rem 0.7rem 0.4rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffd54f, #ffb300);
+  color: #0f3d27;
+  box-shadow: 0 4px 14px rgba(255, 179, 0, 0.55), 0 0 0 3px rgba(255, 255, 255, 0.18);
+  animation: menu-pulse 2.4s ease-in-out 3;
+}
+.menu-btn:hover { background: linear-gradient(180deg, #ffe082, #ffc107); }
+.menu-btn:active { transform: scale(0.96); }
+.menu-btn-icon { font-size: 1.5rem; line-height: 1; font-weight: 800; }
+.menu-btn-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+
+@keyframes menu-pulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(255, 179, 0, 0.55), 0 0 0 3px rgba(255, 255, 255, 0.18); }
+  50% { box-shadow: 0 4px 14px rgba(255, 179, 0, 0.55), 0 0 0 9px rgba(255, 213, 79, 0.35); }
+}
