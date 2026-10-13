@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useIncomes } from '../hooks/useIncomes';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
@@ -17,6 +17,7 @@ const emptyForm = {
 
 function IncomeForm({ editingIncome, onFinishEdit }) {
   const { addIncome, updateIncome } = useIncomes();
+  const formRef = useRef(null);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const { accounts, getAccountCurrency } = useAccounts();
@@ -30,6 +31,8 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
 
   useEffect(() => {
     if (editingIncome) {
+      // Le formulaire est en haut de page : on y remonte pour que la modification soit visible.
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setForm({
         label: editingIncome.label,
         amount: editingIncome.amount,
@@ -84,7 +87,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
   };
 
   return (
-    <form className="income-form" onSubmit={handleSubmit}>
+    <form className="income-form" onSubmit={handleSubmit} ref={formRef}>
       <h2>{isEditing ? t('Modifier le revenu') : t('Ajouter un revenu')}</h2>
 
       {error && <p className="form-error">{error}</p>}

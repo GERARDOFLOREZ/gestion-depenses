@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
@@ -17,6 +17,7 @@ const emptyForm = {
 
 function ExpenseForm({ editingExpense, onFinishEdit }) {
   const { addExpense, updateExpense } = useExpenses();
+  const formRef = useRef(null);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const { accounts, getAccountCurrency } = useAccounts();
@@ -30,6 +31,8 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
 
   useEffect(() => {
     if (editingExpense) {
+      // Le formulaire est en haut de page : on y remonte pour que la modification soit visible.
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setForm({
         label: editingExpense.label,
         amount: editingExpense.amount,
@@ -84,7 +87,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
   };
 
   return (
-    <form className="expense-form" onSubmit={handleSubmit}>
+    <form className="expense-form" onSubmit={handleSubmit} ref={formRef}>
       <h2>{isEditing ? t('Modifier la dépense') : t('Ajouter une dépense')}</h2>
 
       {error && <p className="form-error">{error}</p>}

@@ -1438,3 +1438,4 @@ body { color: var(--text); }
   .header-title h1 { font-size: 1.35rem; line-height: 1.2; }
   .header-actions .lang-select { height: 2.3rem; }
 }
+.expense-form, .income-form { scroll-margin-top: 0.75rem; }
