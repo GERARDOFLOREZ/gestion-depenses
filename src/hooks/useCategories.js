@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
 import { useExtras } from './useExtras';
+import { useLanguage } from './useLanguage';
+import { t } from '../i18n';
 import { CATEGORIES, getCategoryById } from '../data/categories';
 import { INCOME_CATEGORIES, getIncomeCategoryById } from '../data/incomeCategories';
 
+const translateLabel = (c) => ({ ...c, label: t(c.label) });
+
 export function useCategories() {
   const { customCategories } = useExtras();
+  const { locale } = useLanguage();
 
   return useMemo(() => {
     const custom = customCategories.rows.map((c) => ({
@@ -16,9 +21,9 @@ export function useCategories() {
       custom: true,
     }));
 
-    const expenseCategories = [...CATEGORIES, ...custom.filter((c) => c.kind === 'expense')];
+    const expenseCategories = [...CATEGORIES.map(translateLabel), ...custom.filter((c) => c.kind === 'expense')];
     const incomeCategories = [
-      ...INCOME_CATEGORIES,
+      ...INCOME_CATEGORIES.map(translateLabel),
       ...custom.filter((c) => c.kind === 'income'),
     ];
 
@@ -31,5 +36,6 @@ export function useCategories() {
       getIncomeCategory: (id) =>
         incomeCategories.find((c) => c.id === id) || getIncomeCategoryById(id),
     };
-  }, [customCategories.rows]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customCategories.rows, locale]);
 }

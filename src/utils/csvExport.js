@@ -1,7 +1,9 @@
+import { t } from '../i18n';
+
 export function exportExpensesToCSV(expenses, { getCategory, getAccount } = {}) {
   if (expenses.length === 0) return;
 
-  const headers = ['Libellé', 'Montant', 'Devise', 'Catégorie', 'Compte', 'Date'];
+  const headers = [t('Libellé'), t('Montant'), t('Devise'), t('Catégorie'), t('Compte'), t('Date')];
 
   const rows = expenses.map((exp) => {
     const category = getCategory ? getCategory(exp.category) : { label: exp.category };
@@ -25,7 +27,7 @@ export function exportExpensesToCSV(expenses, { getCategory, getAccount } = {}) 
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `depenses-${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `${t('depenses')}-${new Date().toISOString().split('T')[0]}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

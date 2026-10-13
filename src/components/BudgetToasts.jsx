@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { t } from '../i18n';
 
 function Toast({ toast, onClose }) {
   useEffect(() => {
@@ -13,7 +14,7 @@ function Toast({ toast, onClose }) {
         <p className="toast-title">{toast.title}</p>
         <p className="toast-text">{toast.message}</p>
       </div>
-      <button type="button" className="toast-close" aria-label="Fermer">✕</button>
+      <button type="button" className="toast-close" aria-label={t('Fermer')}>✕</button>
     </div>
   );
 }
@@ -22,8 +23,8 @@ function BudgetToasts({ toasts, onClose }) {
   if (toasts.length === 0) return null;
   return (
     <div className="toast-stack">
-      {toasts.map((t) => (
-        <Toast key={t.key} toast={t} onClose={onClose} />
+      {toasts.map((item) => (
+        <Toast key={item.key} toast={item} onClose={onClose} />
       ))}
     </div>
   );

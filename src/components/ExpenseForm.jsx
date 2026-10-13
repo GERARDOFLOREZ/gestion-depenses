@@ -5,6 +5,7 @@ import { useCategories } from '../hooks/useCategories';
 import { useView } from '../hooks/useView';
 import { CATEGORIES } from '../data/categories';
 import { getTodayISO } from '../utils/formatters';
+import { t } from '../i18n';
 
 const emptyForm = {
   label: '',
@@ -51,11 +52,11 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
     e.preventDefault();
 
     if (!form.label.trim()) {
-      setError('Le libellé est obligatoire.');
+      setError(t('Le libellé est obligatoire.'));
       return;
     }
     if (!form.amount || Number(form.amount) <= 0) {
-      setError('Le montant doit être un nombre positif.');
+      setError(t('Le montant doit être un nombre positif.'));
       return;
     }
 
@@ -84,24 +85,24 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
 
   return (
     <form className="expense-form" onSubmit={handleSubmit}>
-      <h2>{isEditing ? 'Modifier la dépense' : 'Ajouter une dépense'}</h2>
+      <h2>{isEditing ? t('Modifier la dépense') : t('Ajouter une dépense')}</h2>
 
       {error && <p className="form-error">{error}</p>}
 
       <div className="form-group">
-        <label htmlFor="label">Libellé</label>
+        <label htmlFor="label">{t('Libellé')}</label>
         <input
           type="text"
           id="label"
           name="label"
           value={form.label}
           onChange={handleChange}
-          placeholder="Ex: Courses, Essence..."
+          placeholder={t('Ex: Courses, Essence...')}
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="amount">Montant ({currency.symbol})</label>
+        <label htmlFor="amount">{t('Montant')} ({currency.symbol})</label>
         <input
           type="number"
           id="amount"
@@ -114,7 +115,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="category">Catégorie</label>
+        <label htmlFor="category">{t('Catégorie')}</label>
         <select
           id="category"
           name="category"
@@ -131,7 +132,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
 
       {accounts.length > 0 && (
         <div className="form-group">
-          <label htmlFor="expense-account">Compte</label>
+          <label htmlFor="expense-account">{t('Compte')}</label>
           <select
             id="expense-account"
             name="account_id"
@@ -148,7 +149,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       )}
 
       <div className="form-group">
-        <label htmlFor="date">Date</label>
+        <label htmlFor="date">{t('Date')}</label>
         <input
           type="date"
           id="date"
@@ -159,10 +160,10 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       </div>
 
       <div className="form-actions">
-        <button type="submit">{isEditing ? 'Enregistrer' : 'Ajouter'}</button>
+        <button type="submit">{isEditing ? t('Enregistrer') : t('Ajouter')}</button>
         {isEditing && (
           <button type="button" className="cancel-btn" onClick={handleCancel}>
-            Annuler
+            {t('Annuler')}
           </button>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { t } from '../i18n';
 
 const toHex = (x) => Math.round(x * 255).toString(16).padStart(2, '0');
 
@@ -118,14 +119,14 @@ function ColorPicker({ value, onChange }) {
         aria-expanded={open}
       >
         <span className="color-dot" style={{ backgroundColor: value }} />
-        <span className="color-trigger-text">Choisir une couleur</span>
+        <span className="color-trigger-text">{t('Choisir une couleur')}</span>
         <span className="color-hex">{value.toUpperCase()}</span>
         <span className="color-chevron">{open ? '▲' : '▼'}</span>
       </button>
 
       {open && (
         <div className="color-popover">
-          <p className="color-section">Couleurs</p>
+          <p className="color-section">{t('Couleurs')}</p>
           <div className="color-grid">
             {PALETTE.map((c) => (
               <button
@@ -138,12 +139,12 @@ function ColorPicker({ value, onChange }) {
                   onChange(c);
                   setHsv(hexToHsv(c));
                 }}
-                aria-label={`Couleur ${c}`}
+                aria-label={t('Couleur {hex}', { hex: c })}
               />
             ))}
           </div>
 
-          <p className="color-section">Mélanger une couleur</p>
+          <p className="color-section">{t('Mélanger une couleur')}</p>
           <div
             className="color-square"
             style={{ backgroundColor: `hsl(${hsv.h}, 100%, 50%)` }}
@@ -170,10 +171,10 @@ function ColorPicker({ value, onChange }) {
               onChange={handleHex}
               maxLength={7}
               spellCheck={false}
-              aria-label="Code couleur hexadécimal"
+              aria-label={t('Code couleur hexadécimal')}
             />
             <button type="button" className="color-done" onClick={() => setOpen(false)}>
-              OK
+              {t('OK')}
             </button>
           </div>
         </div>

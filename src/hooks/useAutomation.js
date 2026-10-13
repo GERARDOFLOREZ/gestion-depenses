@@ -5,31 +5,8 @@ import { IncomeContext } from '../context/IncomeContext';
 import { useAuth } from './useAuth';
 import { useExtras } from './useExtras';
 import { useCurrency } from './useCurrency';
-import { getTodayISO, shiftMonth } from '../utils/formatters';
-
-const pad = (n) => String(n).padStart(2, '0');
-
-/** Dates (<= aujourd'hui) pas encore générées pour une transaction récurrente. */
-export function pendingDates(rec, today) {
-  const startMonth = rec.last_generated_month
-    ? shiftMonth(rec.last_generated_month, 1)
-    : rec.start_date.slice(0, 7);
-  let [y, m] = startMonth.split('-').map(Number);
-  const out = [];
-  for (let i = 0; i < 240; i += 1) {
-    const daysInMonth = new Date(y, m, 0).getDate();
-    const day = Math.min(rec.day_of_month, daysInMonth);
-    const date = `${y}-${pad(m)}-${pad(day)}`;
-    if (date > today) break;
-    if (date >= rec.start_date) out.push(date);
-    m += 1;
-    if (m > 12) {
-      m = 1;
-      y += 1;
-    }
-  }
-  return out;
-}
+import { getTodayISO } from '../utils/formatters';
+import { pendingDates } from '../utils/recurrence';
 
 /**
  * Tâches automatiques exécutées une fois connecté :
@@ -89,7 +66,12 @@ export function useAutomation() {
 
         processing.current.add(rec.id);
         const lastMonth = dates[dates.length - 1].slice(0, 7);
-        const { error } = await recurring.update(rec.id, { last_generated_month: lastMonth });
+        const lastDate = dates[dates.length - 1];
+        const { error } = await recurring.update(rec.id, {
+          last_generated_month: lastMonth,
+          // La colonne n'existe qu'après schema_v3.sql ; on ne l'envoie que si elle est présente.
+          ...('interval_unit' in rec ? { last_generated_date: lastDate } : {}),
+        });
         if (!error) {
           for (const date of dates) {
             const payload = {

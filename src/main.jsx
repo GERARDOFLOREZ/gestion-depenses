@@ -8,10 +8,12 @@ import { IncomeProvider } from './context/IncomeContext.jsx';
 import { BudgetProvider } from './context/BudgetContext.jsx';
 import { CurrencyProvider } from './context/CurrencyContext.jsx';
 import { ExtrasProvider } from './context/ExtrasContext.jsx';
+import { LanguageProvider } from './context/LanguageContext.jsx';
 import { ViewProvider } from './context/ViewContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <LanguageProvider>
     <AuthProvider>
       <CurrencyProvider>
         <ExpenseProvider>
@@ -27,6 +29,7 @@ createRoot(document.getElementById('root')).render(
         </ExpenseProvider>
       </CurrencyProvider>
     </AuthProvider>
+    </LanguageProvider>
   </StrictMode>
 );
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

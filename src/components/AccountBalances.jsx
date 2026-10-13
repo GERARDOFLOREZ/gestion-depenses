@@ -1,5 +1,6 @@
 import { useAccounts, getAccountType } from '../hooks/useAccounts';
 import { formatAmount } from '../utils/formatters';
+import { t } from '../i18n';
 
 function AccountBalances({ onDelete }) {
   const { accounts, balances, getAccountCurrency } = useAccounts();
@@ -8,7 +9,7 @@ function AccountBalances({ onDelete }) {
 
   return (
     <section className="summary">
-      <h2>Mes comptes</h2>
+      <h2>{t('Mes comptes')}</h2>
       <ul className="account-list">
         {accounts.map((a) => {
           const type = getAccountType(a.type);
@@ -30,7 +31,7 @@ function AccountBalances({ onDelete }) {
                   type="button"
                   className="expense-delete-btn"
                   onClick={() => onDelete(a)}
-                  aria-label={`Supprimer le compte ${a.name}`}
+                  aria-label={t('Supprimer le compte {name}', { name: a.name })}
                 >
                   🗑️
                 </button>

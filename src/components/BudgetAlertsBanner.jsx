@@ -1,4 +1,5 @@
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts';
+import { t } from '../i18n';
 
 function BudgetAlertsBanner({ onSeeBudgets }) {
   const alerts = useBudgetAlerts();
@@ -6,7 +7,7 @@ function BudgetAlertsBanner({ onSeeBudgets }) {
 
   return (
     <section className="alert-banner" role="alert">
-      <h2>⚠️ Budgets à surveiller ce mois-ci</h2>
+      <h2>⚠️ {t('Budgets à surveiller ce mois-ci')}</h2>
       <ul>
         {alerts.map((a) => (
           <li key={a.id} className={`alert-item alert-${a.level}`}>
@@ -17,7 +18,7 @@ function BudgetAlertsBanner({ onSeeBudgets }) {
       </ul>
       {onSeeBudgets && (
         <button type="button" className="alert-link" onClick={onSeeBudgets}>
-          Voir mes budgets →
+          {t('Voir mes budgets →')}
         </button>
       )}
     </section>

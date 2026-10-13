@@ -5,6 +5,7 @@ import { useCategories } from '../hooks/useCategories';
 import { useView } from '../hooks/useView';
 import { INCOME_CATEGORIES } from '../data/incomeCategories';
 import { getTodayISO } from '../utils/formatters';
+import { t } from '../i18n';
 
 const emptyForm = {
   label: '',
@@ -51,11 +52,11 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
     e.preventDefault();
 
     if (!form.label.trim()) {
-      setError('Le libellé est obligatoire.');
+      setError(t('Le libellé est obligatoire.'));
       return;
     }
     if (!form.amount || Number(form.amount) <= 0) {
-      setError('Le montant doit être un nombre positif.');
+      setError(t('Le montant doit être un nombre positif.'));
       return;
     }
 
@@ -84,24 +85,24 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
 
   return (
     <form className="income-form" onSubmit={handleSubmit}>
-      <h2>{isEditing ? 'Modifier le revenu' : 'Ajouter un revenu'}</h2>
+      <h2>{isEditing ? t('Modifier le revenu') : t('Ajouter un revenu')}</h2>
 
       {error && <p className="form-error">{error}</p>}
 
       <div className="form-group">
-        <label htmlFor="income-label">Libellé</label>
+        <label htmlFor="income-label">{t('Libellé')}</label>
         <input
           type="text"
           id="income-label"
           name="label"
           value={form.label}
           onChange={handleChange}
-          placeholder="Ex: Salaire, Freelance..."
+          placeholder={t('Ex: Salaire, Freelance...')}
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="income-amount">Montant ({currency.symbol})</label>
+        <label htmlFor="income-amount">{t('Montant')} ({currency.symbol})</label>
         <input
           type="number"
           id="income-amount"
@@ -114,7 +115,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="income-category">Catégorie</label>
+        <label htmlFor="income-category">{t('Catégorie')}</label>
         <select
           id="income-category"
           name="category"
@@ -131,7 +132,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
 
       {accounts.length > 0 && (
         <div className="form-group">
-          <label htmlFor="income-account">Compte</label>
+          <label htmlFor="income-account">{t('Compte')}</label>
           <select
             id="income-account"
             name="account_id"
@@ -148,7 +149,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       )}
 
       <div className="form-group">
-        <label htmlFor="income-date">Date</label>
+        <label htmlFor="income-date">{t('Date')}</label>
         <input
           type="date"
           id="income-date"
@@ -159,10 +160,10 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       </div>
 
       <div className="form-actions">
-        <button type="submit">{isEditing ? 'Enregistrer' : 'Ajouter'}</button>
+        <button type="submit">{isEditing ? t('Enregistrer') : t('Ajouter')}</button>
         {isEditing && (
           <button type="button" className="cancel-btn" onClick={handleCancel}>
-            Annuler
+            {t('Annuler')}
           </button>
         )}
       </div>

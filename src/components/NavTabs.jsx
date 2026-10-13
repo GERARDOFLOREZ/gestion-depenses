@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { MENU_GROUPS } from '../data/menu';
+import { t } from '../i18n';
 
 function NavTabs({ activeTab, onTabChange, open, onClose }) {
   useEffect(() => {
@@ -12,17 +13,17 @@ function NavTabs({ activeTab, onTabChange, open, onClose }) {
   return (
     <>
       <div className={`menu-overlay ${open ? 'open' : ''}`} onClick={onClose} aria-hidden="true" />
-      <nav className={`side-menu ${open ? 'open' : ''}`} aria-label="Menu principal">
+      <nav className={`side-menu ${open ? 'open' : ''}`} aria-label={t('Menu principal')}>
         <div className="side-menu-head">
-          <span className="side-menu-brand">💰 Mes finances</span>
-          <button type="button" className="side-menu-close" onClick={onClose} aria-label="Fermer le menu">
+          <span className="side-menu-brand">💰 {t('Mes finances')}</span>
+          <button type="button" className="side-menu-close" onClick={onClose} aria-label={t('Fermer le menu')}>
             ✕
           </button>
         </div>
 
         {MENU_GROUPS.map((group) => (
           <div key={group.title} className="side-group">
-            <p className="side-group-title">{group.title}</p>
+            <p className="side-group-title">{t(group.title)}</p>
             {group.items.map((item) => (
               <button
                 key={item.id}
@@ -34,7 +35,7 @@ function NavTabs({ activeTab, onTabChange, open, onClose }) {
                 }}
               >
                 <span className="side-link-icon">{item.icon}</span>
-                {item.label}
+                {t(item.label)}
               </button>
             ))}
           </div>

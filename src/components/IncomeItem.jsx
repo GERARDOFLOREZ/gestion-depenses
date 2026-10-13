@@ -2,6 +2,7 @@ import { useIncomes } from '../hooks/useIncomes';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
 import { formatAmount, formatDate } from '../utils/formatters';
+import { t } from '../i18n';
 
 function IncomeItem({ income, onEdit }) {
   const { deleteIncome } = useIncomes();
@@ -12,7 +13,7 @@ function IncomeItem({ income, onEdit }) {
   const account = getAccount(income.account_id);
 
   const handleDelete = () => {
-    if (window.confirm(`Supprimer le revenu "${income.label}" ?`)) {
+    if (window.confirm(t('Supprimer le revenu "{label}" ?', { label: income.label }))) {
       deleteIncome(income.id);
     }
   };
@@ -41,7 +42,7 @@ function IncomeItem({ income, onEdit }) {
       <button
         className="expense-edit-btn"
         onClick={() => onEdit(income)}
-        aria-label={`Modifier ${income.label}`}
+        aria-label={t('Modifier {label}', { label: income.label })}
       >
         ✏️
       </button>
@@ -49,7 +50,7 @@ function IncomeItem({ income, onEdit }) {
       <button
         className="expense-delete-btn"
         onClick={handleDelete}
-        aria-label={`Supprimer ${income.label}`}
+        aria-label={t('Supprimer {label}', { label: income.label })}
       >
         🗑️
       </button>

@@ -8,6 +8,7 @@ import { formatAmount, formatDate, getTodayISO } from '../utils/formatters';
 import AccountBalances from './AccountBalances';
 import CurrencySelector from './CurrencySelector';
 import DbNotice from './DbNotice';
+import { t } from '../i18n';
 
 function AccountsPage() {
   const expenseCtx = useContext(ExpenseContext);
@@ -25,21 +26,21 @@ function AccountsPage() {
 
   const handleAddAccount = async (e) => {
     e.preventDefault();
-    if (!acc.name.trim()) return setAccError('Le nom du compte est obligatoire.');
+    if (!acc.name.trim()) return setAccError(t('Le nom du compte est obligatoire.'));
     const { error: err } = await addAccount({
       name: acc.name.trim(),
       type: acc.type,
       currency: acc.currency,
       initial_balance: Number(acc.initial) || 0,
     });
-    if (err) return setAccError("Impossible de créer le compte (base de données à mettre à jour ?).");
+    if (err) return setAccError(t("Impossible de créer le compte (base de données à mettre à jour ?)."));
     setAcc({ ...acc, name: '', initial: '' });
     setAccError('');
   };
 
   const handleDeleteAccount = async (account) => {
     const ok = window.confirm(
-      `Supprimer le compte "${account.name}" ?\nSes dépenses et revenus seront conservés mais n'auront plus de compte.`
+      t("Supprimer le compte \"{name}\" ?\nSes dépenses et revenus seront conservés mais n'auront plus de compte.", { name: account.name })
     );
     if (!ok) return;
     await removeAccount(account.id);
@@ -53,11 +54,11 @@ function AccountsPage() {
 
   const handleTransfer = async (e) => {
     e.preventDefault();
-    if (!tr.from || !tr.to) return setTrError('Choisissez les deux comptes.');
-    if (tr.from === tr.to) return setTrError('Les deux comptes doivent être différents.');
-    if (!tr.amount || Number(tr.amount) <= 0) return setTrError('Le montant doit être positif.');
+    if (!tr.from || !tr.to) return setTrError(t('Choisissez les deux comptes.'));
+    if (tr.from === tr.to) return setTrError(t('Les deux comptes doivent être différents.'));
+    if (!tr.amount || Number(tr.amount) <= 0) return setTrError(t('Le montant doit être positif.'));
     if (crossCurrency && (!tr.toAmount || Number(tr.toAmount) <= 0)) {
-      return setTrError('Indiquez le montant reçu (devises différentes).');
+      return setTrError(t('Indiquez le montant reçu (devises différentes).'));
     }
     const { error: err } = await addTransfer({
       from_account_id: tr.from,
@@ -66,7 +67,7 @@ function AccountsPage() {
       to_amount: crossCurrency ? Number(tr.toAmount) : Number(tr.amount),
       date: tr.date,
     });
-    if (err) return setTrError("Impossible d'enregistrer le virement.");
+    if (err) return setTrError(t("Impossible d'enregistrer le virement."));
     setTr({ ...tr, amount: '', toAmount: '' });
     setTrError('');
   };
@@ -76,9 +77,9 @@ function AccountsPage() {
       <DbNotice error={error} />
 
       <section className="summary">
-        <h2>Devise principale</h2>
+        <h2>{t('Devise principale')}</h2>
         <p className="hint">
-          Utilisée par défaut pour les nouveaux comptes et pour vos budgets.
+          {t('Utilisée par défaut pour les nouveaux comptes et pour vos budgets.')}
         </p>
         <CurrencySelector />
       </section>
@@ -86,92 +87,92 @@ function AccountsPage() {
       <AccountBalances onDelete={handleDeleteAccount} />
 
       <form className="expense-form" onSubmit={handleAddAccount}>
-        <h2>Ajouter un compte</h2>
+        <h2>{t('Ajouter un compte')}</h2>
         {accError && <p className="form-error">{accError}</p>}
         <div className="form-group">
-          <label htmlFor="acc-name">Nom</label>
-          <input id="acc-name" value={acc.name} onChange={(e) => setAcc({ ...acc, name: e.target.value })} placeholder="Ex : Attijariwafa, Orange Money, Cash..." />
+          <label htmlFor="acc-name">{t('Nom')}</label>
+          <input id="acc-name" value={acc.name} onChange={(e) => setAcc({ ...acc, name: e.target.value })} placeholder={t('Ex : Attijariwafa, Orange Money, Cash...')} />
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="acc-type">Type</label>
+            <label htmlFor="acc-type">{t('Type')}</label>
             <select id="acc-type" value={acc.type} onChange={(e) => setAcc({ ...acc, type: e.target.value })}>
-              {ACCOUNT_TYPES.map((t) => (
-                <option key={t.id} value={t.id}>{t.icon} {t.label}</option>
+              {ACCOUNT_TYPES.map((type) => (
+                <option key={type.id} value={type.id}>{type.icon} {t(type.label)}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="acc-cur">Devise</label>
+            <label htmlFor="acc-cur">{t('Devise')}</label>
             <select id="acc-cur" value={acc.currency} onChange={(e) => setAcc({ ...acc, currency: e.target.value })}>
               {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.symbol} — {c.label}</option>
+                <option key={c.code} value={c.code}>{c.symbol} — {t(c.label)}</option>
               ))}
             </select>
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="acc-init">Solde de départ</label>
+          <label htmlFor="acc-init">{t('Solde de départ')}</label>
           <input id="acc-init" type="number" step="0.01" value={acc.initial} onChange={(e) => setAcc({ ...acc, initial: e.target.value })} placeholder="0" />
         </div>
-        <button type="submit">Ajouter le compte</button>
+        <button type="submit">{t('Ajouter le compte')}</button>
       </form>
 
       {accounts.length >= 2 && (
         <form className="expense-form" onSubmit={handleTransfer}>
-          <h2>Virement entre comptes</h2>
+          <h2>{t('Virement entre comptes')}</h2>
           {trError && <p className="form-error">{trError}</p>}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="tr-from">De</label>
+              <label htmlFor="tr-from">{t('De')}</label>
               <select id="tr-from" value={tr.from} onChange={(e) => setTr({ ...tr, from: e.target.value })}>
-                <option value="">Choisir…</option>
+                <option value="">{t('Choisir…')}</option>
                 {accounts.map((a) => (<option key={a.id} value={a.id}>{a.name} ({a.currency})</option>))}
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="tr-to">Vers</label>
+              <label htmlFor="tr-to">{t('Vers')}</label>
               <select id="tr-to" value={tr.to} onChange={(e) => setTr({ ...tr, to: e.target.value })}>
-                <option value="">Choisir…</option>
+                <option value="">{t('Choisir…')}</option>
                 {accounts.map((a) => (<option key={a.id} value={a.id}>{a.name} ({a.currency})</option>))}
               </select>
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="tr-amount">Montant envoyé {from ? `(${from.currency})` : ''}</label>
+              <label htmlFor="tr-amount">{t('Montant envoyé')} {from ? `(${from.currency})` : ''}</label>
               <input id="tr-amount" type="number" step="0.01" min="0" value={tr.amount} onChange={(e) => setTr({ ...tr, amount: e.target.value })} />
             </div>
             {crossCurrency && (
               <div className="form-group">
-                <label htmlFor="tr-to-amount">Montant reçu ({to.currency})</label>
+                <label htmlFor="tr-to-amount">{t('Montant reçu')} ({to.currency})</label>
                 <input id="tr-to-amount" type="number" step="0.01" min="0" value={tr.toAmount} onChange={(e) => setTr({ ...tr, toAmount: e.target.value })} />
               </div>
             )}
           </div>
           <div className="form-group">
-            <label htmlFor="tr-date">Date</label>
+            <label htmlFor="tr-date">{t('Date')}</label>
             <input id="tr-date" type="date" value={tr.date} onChange={(e) => setTr({ ...tr, date: e.target.value })} />
           </div>
-          <button type="submit">Effectuer le virement</button>
+          <button type="submit">{t('Effectuer le virement')}</button>
         </form>
       )}
 
       {transfers.length > 0 && (
         <section className="expense-list-section">
-          <div className="expense-list-header"><h2>Virements ({transfers.length})</h2></div>
+          <div className="expense-list-header"><h2>{t('Virements ({count})', { count: transfers.length })}</h2></div>
           <ul className="expense-list">
-            {transfers.map((t) => (
-              <li key={t.id} className="expense-item">
-                <span className="expense-category-badge" style={{ backgroundColor: '#607D8B' }}>Virement</span>
+            {transfers.map((tf) => (
+              <li key={tf.id} className="expense-item">
+                <span className="expense-category-badge" style={{ backgroundColor: '#607D8B' }}>{t('Virement')}</span>
                 <div className="expense-info">
-                  <p className="expense-label">{getAccount(t.from_account_id)?.name || '?'} → {getAccount(t.to_account_id)?.name || '?'}</p>
-                  <p className="expense-date">{formatDate(t.date)}</p>
+                  <p className="expense-label">{getAccount(tf.from_account_id)?.name || '?'} → {getAccount(tf.to_account_id)?.name || '?'}</p>
+                  <p className="expense-date">{formatDate(tf.date)}</p>
                 </div>
                 <span className="expense-amount">
-                  {formatAmount(t.amount, getAccountCurrency(t.from_account_id))}
+                  {formatAmount(tf.amount, getAccountCurrency(tf.from_account_id))}
                 </span>
-                <button type="button" className="expense-delete-btn" onClick={() => window.confirm('Supprimer ce virement ?') && removeTransfer(t.id)} aria-label="Supprimer le virement">🗑️</button>
+                <button type="button" className="expense-delete-btn" onClick={() => window.confirm(t('Supprimer ce virement ?')) && removeTransfer(tf.id)} aria-label={t('Supprimer le virement')}>🗑️</button>
               </li>
             ))}
           </ul>

@@ -3,6 +3,8 @@ import { ExpenseContext } from '../context/ExpenseContext';
 import { useBudgets } from './useBudgets';
 import { useCurrency } from './useCurrency';
 import { formatAmount } from '../utils/formatters';
+import { t } from '../i18n';
+import { useLanguage } from './useLanguage';
 
 // Les messages parlent en montants (pas en pourcentages).
 function buildAlert(cat, currency) {
@@ -12,16 +14,24 @@ function buildAlert(cat, currency) {
       id: `${cat.id}-over`,
       catId: cat.id,
       level: 'over',
-      title: `Budget « ${cat.label} » dépassé`,
-      message: `Vous avez dépensé ${formatAmount(cat.spent, currency)} pour un budget de ${budget} : dépassement de ${formatAmount(Math.abs(cat.remaining), currency)}.`,
+      title: t('Budget « {label} » dépassé', { label: cat.label }),
+      message: t('Vous avez dépensé {spent} pour un budget de {budget} : dépassement de {over}.', {
+        spent: formatAmount(cat.spent, currency),
+        budget,
+        over: formatAmount(Math.abs(cat.remaining), currency),
+      }),
     };
   }
   return {
     id: `${cat.id}-warn`,
     catId: cat.id,
     level: 'warn',
-    title: `Budget « ${cat.label} » presque atteint`,
-    message: `Il ne vous reste que ${formatAmount(cat.remaining, currency)} sur ${budget} (déjà dépensé : ${formatAmount(cat.spent, currency)}).`,
+    title: t('Budget « {label} » presque atteint', { label: cat.label }),
+    message: t('Il ne vous reste que {left} sur {budget} (déjà dépensé : {spent}).', {
+      left: formatAmount(cat.remaining, currency),
+      budget,
+      spent: formatAmount(cat.spent, currency),
+    }),
   };
 }
 
@@ -29,6 +39,7 @@ function buildAlert(cat, currency) {
 export function useBudgetAlerts() {
   const { budgetStatus } = useBudgets();
   const { currency } = useCurrency();
+  const { locale } = useLanguage();
 
   return useMemo(
     () =>
@@ -36,7 +47,8 @@ export function useBudgetAlerts() {
         .filter((c) => c.isOverBudget || c.isNearLimit)
         .map((c) => buildAlert(c, currency))
         .sort((a, b) => (a.level === b.level ? 0 : a.level === 'over' ? -1 : 1)),
-    [budgetStatus, currency]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [budgetStatus, currency, locale]
   );
 }
 
@@ -72,14 +84,14 @@ export function useBudgetToasts() {
         .map((c) => ({ ...buildAlert(c, currency), key: `${c.id}-${Date.now()}` }));
       if (fresh.length > 0) {
         const ids = new Set(fresh.map((f) => f.catId));
-        setToasts((t) => [...t.filter((x) => !ids.has(x.catId)), ...fresh]);
+        setToasts((list) => [...list.filter((x) => !ids.has(x.catId)), ...fresh]);
       }
     }
     previous.current = now;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, budgetStatus]);
 
-  const dismissToast = (key) => setToasts((t) => t.filter((x) => x.key !== key));
+  const dismissToast = (key) => setToasts((list) => list.filter((x) => x.key !== key));
 
   return { toasts, dismissToast };
 }

@@ -4,6 +4,7 @@ import { useCurrency } from '../hooks/useCurrency';
 import { CURRENCIES, getCurrencyByCode } from '../data/currencies';
 import { formatAmount, formatDate, getTodayISO } from '../utils/formatters';
 import DbNotice from './DbNotice';
+import { t } from '../i18n';
 
 function monthsUntil(deadline) {
   const now = new Date(getTodayISO());
@@ -34,10 +35,10 @@ function GoalCard({ goal, onContribute, onDelete }) {
         <div>
           <p className="expense-label">{done ? '🎉 ' : '🎯 '}{goal.name}</p>
           <p className="expense-date">
-            {goal.deadline ? `Échéance : ${formatDate(goal.deadline)}` : 'Sans échéance'}
+            {goal.deadline ? t('Échéance : {date}', { date: formatDate(goal.deadline) }) : t('Sans échéance')}
           </p>
         </div>
-        <button type="button" className="expense-delete-btn" onClick={() => window.confirm(`Supprimer l'objectif "${goal.name}" ?`) && onDelete(goal.id)} aria-label="Supprimer l'objectif">🗑️</button>
+        <button type="button" className="expense-delete-btn" onClick={() => window.confirm(t('Supprimer l\'objectif "{name}" ?', { name: goal.name })) && onDelete(goal.id)} aria-label={t("Supprimer l'objectif")}>🗑️</button>
       </div>
       <div className="progress-track">
         <div className={`progress-fill ${done ? 'done' : ''}`} style={{ width: `${pct}%` }} />
@@ -48,13 +49,13 @@ function GoalCard({ goal, onContribute, onDelete }) {
       </div>
       {!done && goal.deadline && (
         <p className="hint">
-          Pour y arriver : environ {formatAmount(remaining / monthsUntil(goal.deadline), currency)} / mois.
+          {t('Pour y arriver : environ {amount} / mois.', { amount: formatAmount(remaining / monthsUntil(goal.deadline), currency) })}
         </p>
       )}
       <div className="inline-add">
-        <input type="number" min="0" step="0.01" value={value} onChange={(e) => setValue(e.target.value)} placeholder={`Montant (${currency.symbol})`} />
-        <button type="button" onClick={() => submit(1)}>Ajouter</button>
-        <button type="button" className="secondary" onClick={() => submit(-1)}>Retirer</button>
+        <input type="number" min="0" step="0.01" value={value} onChange={(e) => setValue(e.target.value)} placeholder={`${t('Montant')} (${currency.symbol})`} />
+        <button type="button" onClick={() => submit(1)}>{t('Ajouter')}</button>
+        <button type="button" className="secondary" onClick={() => submit(-1)}>{t('Retirer')}</button>
       </div>
     </li>
   );
@@ -68,8 +69,8 @@ function GoalsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return setError("Donnez un nom à l'objectif.");
-    if (!form.target || Number(form.target) <= 0) return setError('Le montant cible doit être positif.');
+    if (!form.name.trim()) return setError(t("Donnez un nom à l'objectif."));
+    if (!form.target || Number(form.target) <= 0) return setError(t('Le montant cible doit être positif.'));
     const { error: err } = await goals.add({
       name: form.name.trim(),
       target_amount: Number(form.target),
@@ -77,7 +78,7 @@ function GoalsPage() {
       currency: form.currency,
       deadline: form.deadline || null,
     });
-    if (err) return setError("Impossible d'enregistrer l'objectif (base de données à mettre à jour ?).");
+    if (err) return setError(t("Impossible d'enregistrer l'objectif (base de données à mettre à jour ?)."));
     setForm({ ...form, name: '', target: '', saved: '', deadline: '' });
     setError('');
   };
@@ -92,39 +93,39 @@ function GoalsPage() {
       <DbNotice error={goals.error} />
 
       <form className="expense-form" onSubmit={handleSubmit}>
-        <h2>Nouvel objectif d'épargne</h2>
+        <h2>{t("Nouvel objectif d'épargne")}</h2>
         {error && <p className="form-error">{error}</p>}
         <div className="form-group">
-          <label htmlFor="goal-name">Objectif</label>
-          <input id="goal-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex : Ordinateur portable, Voyage, Fonds d'urgence" />
+          <label htmlFor="goal-name">{t('Objectif')}</label>
+          <input id="goal-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t("Ex : Ordinateur portable, Voyage, Fonds d'urgence")} />
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="goal-target">Montant cible</label>
+            <label htmlFor="goal-target">{t('Montant cible')}</label>
             <input id="goal-target" type="number" min="0" step="0.01" value={form.target} onChange={(e) => setForm({ ...form, target: e.target.value })} />
           </div>
           <div className="form-group">
-            <label htmlFor="goal-cur">Devise</label>
+            <label htmlFor="goal-cur">{t('Devise')}</label>
             <select id="goal-cur" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}>
-              {CURRENCIES.map((c) => (<option key={c.code} value={c.code}>{c.symbol} — {c.label}</option>))}
+              {CURRENCIES.map((c) => (<option key={c.code} value={c.code}>{c.symbol} — {t(c.label)}</option>))}
             </select>
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="goal-saved">Déjà épargné</label>
+            <label htmlFor="goal-saved">{t('Déjà épargné')}</label>
             <input id="goal-saved" type="number" min="0" step="0.01" value={form.saved} onChange={(e) => setForm({ ...form, saved: e.target.value })} placeholder="0" />
           </div>
           <div className="form-group">
-            <label htmlFor="goal-deadline">Échéance (facultatif)</label>
+            <label htmlFor="goal-deadline">{t('Échéance (facultatif)')}</label>
             <input id="goal-deadline" type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
           </div>
         </div>
-        <button type="submit">Créer l'objectif</button>
+        <button type="submit">{t("Créer l'objectif")}</button>
       </form>
 
       {goals.rows.length === 0 ? (
-        <div className="expense-list-empty"><p>Aucun objectif pour le moment.</p></div>
+        <div className="expense-list-empty"><p>{t('Aucun objectif pour le moment.')}</p></div>
       ) : (
         <ul className="expense-list">
           {goals.rows.map((g) => (

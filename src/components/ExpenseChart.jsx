@@ -5,7 +5,8 @@ import { useAccounts } from '../hooks/useAccounts';
 import { useView } from '../hooks/useView';
 import { useCategories } from '../hooks/useCategories';
 import { getCurrencyByCode } from '../data/currencies';
-import { formatAmount, formatMonthLabel } from '../utils/formatters';
+import { formatAmount, formatMonthName } from '../utils/formatters';
+import { t } from '../i18n';
 
 function ExpenseChart() {
   const { expenses } = useExpenses();
@@ -35,11 +36,11 @@ function ExpenseChart() {
 
   if (rows.length === 0) return null;
 
-  const centerLabel = month === 'all' ? 'Total' : formatMonthLabel(month).split(' ')[0];
+  const centerLabel = month === 'all' ? t('Total') : formatMonthName(month);
 
   return (
     <section className="expense-chart">
-      <h2>Répartition des dépenses</h2>
+      <h2>{t('Répartition des dépenses')}</h2>
 
       <div className="donut-layout">
         <div className="donut-box">

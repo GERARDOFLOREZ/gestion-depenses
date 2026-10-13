@@ -30,6 +30,9 @@ import CategoriesPage from './components/CategoriesPage';
 import ExpenseList from './components/ExpenseList';
 import IncomeForm from './components/IncomeForm';
 import IncomeList from './components/IncomeList';
+import LanguageSelector from './components/LanguageSelector';
+import { useLanguage } from './hooks/useLanguage';
+import { t } from './i18n';
 import './App.css';
 
 const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
@@ -42,8 +45,8 @@ function Dashboard({ onSeeBudgets }) {
         <CurrencySelector />
         <p className="hint">
           {isMixed
-            ? `Vos comptes ont des devises différentes : les graphiques sont en ${viewCurrencyCode}. Changez la devise ici, ou choisissez un compte.`
-            : 'Utilisée pour vos budgets et pour les nouveaux comptes.'}
+            ? t('Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.', { code: viewCurrencyCode })
+            : t('Utilisée pour vos budgets et pour les nouveaux comptes.')}
         </p>
       </div>
       <BudgetAlertsBanner onSeeBudgets={onSeeBudgets} />
@@ -56,12 +59,13 @@ function Dashboard({ onSeeBudgets }) {
 
 function App() {
   const { user, loading, signOut, recovering } = useAuth();
+  useLanguage(); // se réabonne : tout l'arbre se réaffiche quand la langue change
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingExpense, setEditingExpense] = useState(null);
   const [editingIncome, setEditingIncome] = useState(null);
 
   if (loading) {
-    return <div className="auth-loading">Chargement...</div>;
+    return <div className="auth-loading">{t('Chargement...')}</div>;
   }
 
   if (recovering) {
@@ -101,10 +105,11 @@ function Shell({
   const { month, accountId } = useView();
   const { getAccount } = useAccounts();
   const totals = useViewTotals();
+  useLanguage();
 
   const scopeLabel = [
-    month === 'all' ? 'Toute la période' : formatMonthLabel(month),
-    accountId === 'all' ? 'Tous les comptes' : getAccount(accountId)?.name,
+    month === 'all' ? t('Toute la période') : formatMonthLabel(month),
+    accountId === 'all' ? t('Tous les comptes') : getAccount(accountId)?.name,
   ]
     .filter(Boolean)
     .join(' · ');
@@ -121,46 +126,47 @@ function Shell({
       <div className="app-content">
       <header className="app-header">
         <div className="app-header-top">
-          <button type="button" className="menu-btn" onClick={() => setMenuOpen(true)} aria-label="Ouvrir le menu">
+          <button type="button" className="menu-btn" onClick={() => setMenuOpen(true)} aria-label={t('Ouvrir le menu')}>
             <span className="menu-btn-icon">☰</span>
-            <span className="menu-btn-label">Menu</span>
+            <span className="menu-btn-label">{t('Menu')}</span>
           </button>
           <div className="header-title">
-            <h1>💰 Gestion des finances</h1>
+            <h1>💰 {t('Gestion des finances')}</h1>
             <p className="header-scope">{scopeLabel}</p>
           </div>
           <div className="header-actions">
+            <LanguageSelector className="header-lang" />
             <button type="button" className="logout-btn" onClick={signOut}>
-              Déconnexion
+              {t('Déconnexion')}
             </button>
           </div>
         </div>
         <div className="balance-summary">
           <div className="balance-item balance-income">
-            <span className="balance-label">Revenus</span>
-            {totals.map((t) => (
-              <span key={t.currency.code} className="balance-value">+ {formatAmount(t.income, t.currency)}</span>
+            <span className="balance-label">{t('Revenus')}</span>
+            {totals.map((tot) => (
+              <span key={tot.currency.code} className="balance-value">+ {formatAmount(tot.income, tot.currency)}</span>
             ))}
           </div>
           <div className="balance-item balance-expense">
-            <span className="balance-label">Dépenses</span>
-            {totals.map((t) => (
-              <span key={t.currency.code} className="balance-value">− {formatAmount(t.expense, t.currency)}</span>
+            <span className="balance-label">{t('Dépenses')}</span>
+            {totals.map((tot) => (
+              <span key={tot.currency.code} className="balance-value">− {formatAmount(tot.expense, tot.currency)}</span>
             ))}
           </div>
           <div
-            className={`balance-item balance-total ${totals.every((t) => t.balance >= 0) ? 'positive' : 'negative'}`}
+            className={`balance-item balance-total ${totals.every((tot) => tot.balance >= 0) ? 'positive' : 'negative'}`}
           >
-            <span className="balance-label">Solde</span>
-            {totals.map((t) => (
-              <span key={t.currency.code} className="balance-value">{formatAmount(t.balance, t.currency)}</span>
+            <span className="balance-label">{t('Solde')}</span>
+            {totals.map((tot) => (
+              <span key={tot.currency.code} className="balance-value">{formatAmount(tot.balance, tot.currency)}</span>
             ))}
           </div>
         </div>
       </header>
 
       <h2 className="page-title">
-        {current?.icon} {current?.label}
+        {current?.icon} {current && t(current.label)}
       </h2>
 
       {VIEW_TABS.includes(activeTab) && <ViewBar />}

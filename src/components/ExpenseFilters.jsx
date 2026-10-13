@@ -1,5 +1,6 @@
 import { useExpenses } from '../hooks/useExpenses';
 import { useCategories } from '../hooks/useCategories';
+import { t } from '../i18n';
 
 function ExpenseFilters() {
   const { filters, updateFilter, resetFilters } = useExpenses();
@@ -18,26 +19,26 @@ function ExpenseFilters() {
   return (
     <section className="expense-filters">
       <div className="filter-group filter-search">
-        <label htmlFor="filter-search">Recherche</label>
+        <label htmlFor="filter-search">{t('Recherche')}</label>
         <input
           type="text"
           id="filter-search"
           name="search"
           value={filters.search}
           onChange={handleChange}
-          placeholder="Rechercher un libellé..."
+          placeholder={t('Rechercher un libellé...')}
         />
       </div>
 
       <div className="filter-group">
-        <label htmlFor="filter-category">Catégorie</label>
+        <label htmlFor="filter-category">{t('Catégorie')}</label>
         <select
           id="filter-category"
           name="category"
           value={filters.category}
           onChange={handleChange}
         >
-          <option value="all">Toutes</option>
+          <option value="all">{t('Toutes')}</option>
           {expenseCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.label}
@@ -47,7 +48,7 @@ function ExpenseFilters() {
       </div>
 
       <div className="filter-group">
-        <label htmlFor="filter-start">Du</label>
+        <label htmlFor="filter-start">{t('Du')}</label>
         <input
           type="date"
           id="filter-start"
@@ -58,7 +59,7 @@ function ExpenseFilters() {
       </div>
 
       <div className="filter-group">
-        <label htmlFor="filter-end">Au</label>
+        <label htmlFor="filter-end">{t('Au')}</label>
         <input
           type="date"
           id="filter-end"
@@ -70,7 +71,7 @@ function ExpenseFilters() {
 
       {hasActiveFilters && (
         <button type="button" className="filter-reset-btn" onClick={resetFilters}>
-          Réinitialiser
+          {t('Réinitialiser')}
         </button>
       )}
     </section>

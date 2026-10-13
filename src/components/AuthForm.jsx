@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { t } from '../i18n';
+import LanguageSelector from './LanguageSelector';
 
 function AuthForm() {
   const { signUp, signIn, resetPassword } = useAuth();
@@ -20,7 +22,7 @@ function AuthForm() {
 
     if (isForgot) {
       if (!email) {
-        setError('Entrez votre adresse e-mail.');
+        setError(t('Entrez votre adresse e-mail.'));
         return;
       }
       setLoading(true);
@@ -29,17 +31,17 @@ function AuthForm() {
       if (error) {
         setError(error.message);
       } else {
-        setInfoMessage('Si un compte existe pour cette adresse, un lien de réinitialisation vient d\'être envoyé.');
+        setInfoMessage(t("Si un compte existe pour cette adresse, un lien de réinitialisation vient d'être envoyé."));
       }
       return;
     }
 
     if (!email || !password) {
-      setError('Email et mot de passe sont obligatoires.');
+      setError(t('Email et mot de passe sont obligatoires.'));
       return;
     }
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères.');
+      setError(t('Le mot de passe doit contenir au moins 6 caractères.'));
       return;
     }
 
@@ -51,7 +53,7 @@ function AuthForm() {
       if (error) {
         setError(error.message);
       } else {
-        setInfoMessage('Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.');
+        setInfoMessage(t('Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.'));
         setMode('signin');
       }
     } else {
@@ -65,34 +67,35 @@ function AuthForm() {
 
   return (
     <div className="auth-page">
+      <LanguageSelector className="auth-lang" />
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>💰 Gestion des finances</h1>
-        <h2>{isForgot ? 'Mot de passe oublié' : isSignUp ? 'Créer un compte' : 'Se connecter'}</h2>
+        <h1>💰 {t('Gestion des finances')}</h1>
+        <h2>{isForgot ? t('Mot de passe oublié') : isSignUp ? t('Créer un compte') : t('Se connecter')}</h2>
 
         {error && <p className="form-error">{error}</p>}
         {infoMessage && <p className="form-info">{infoMessage}</p>}
 
         <div className="form-group">
-          <label htmlFor="auth-email">Email</label>
+          <label htmlFor="auth-email">{t('Email')}</label>
           <input
             type="email"
             id="auth-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="ton@email.com"
+            placeholder={t('ton@email.com')}
             autoComplete="email"
           />
         </div>
 
         {!isForgot && (
         <div className="form-group">
-          <label htmlFor="auth-password">Mot de passe</label>
+          <label htmlFor="auth-password">{t('Mot de passe')}</label>
           <input
             type="password"
             id="auth-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Au moins 6 caractères"
+            placeholder={t('Au moins 6 caractères')}
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
           />
         </div>
@@ -101,17 +104,17 @@ function AuthForm() {
         {mode === 'signin' && (
           <p className="auth-forgot">
             <button type="button" className="auth-switch-btn" onClick={() => { setMode('forgot'); setError(''); setInfoMessage(''); }}>
-              Mot de passe oublié ?
+              {t('Mot de passe oublié ?')}
             </button>
           </p>
         )}
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Chargement...' : isForgot ? 'Envoyer le lien' : isSignUp ? "S'inscrire" : 'Se connecter'}
+          {loading ? t('Chargement...') : isForgot ? t('Envoyer le lien') : isSignUp ? t("S'inscrire") : t('Se connecter')}
         </button>
 
         <p className="auth-switch">
-          {isForgot ? 'Vous vous souvenez ?' : isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
+          {isForgot ? t('Vous vous souvenez ?') : isSignUp ? t('Déjà un compte ?') : t('Pas encore de compte ?')}{' '}
           <button
             type="button"
             className="auth-switch-btn"
@@ -121,7 +124,7 @@ function AuthForm() {
               setInfoMessage('');
             }}
           >
-            {isForgot || isSignUp ? 'Se connecter' : "S'inscrire"}
+            {isForgot || isSignUp ? t('Se connecter') : t("S'inscrire")}
           </button>
         </p>
       </form>

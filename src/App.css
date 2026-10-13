@@ -1385,3 +1385,46 @@ body { color: var(--text); }
   font-family: ui-monospace, monospace; text-transform: uppercase; font-size: 0.9rem;
 }
 .expense-form .color-done { width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+/* ---------- Langue ---------- */
+.lang-select {
+  display: inline-flex; align-items: center; gap: 0.35rem; margin: 0;
+  padding: 0 0.55rem; height: 2.1rem; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
+}
+.lang-select select {
+  appearance: none; -webkit-appearance: none; background: transparent; border: none; color: inherit;
+  font: inherit; font-size: 0.85rem; font-weight: 600; padding: 0 0.1rem; width: auto; cursor: pointer;
+}
+.lang-select select option { color: #16241c; }
+.auth-page { position: relative; }
+.lang-select.auth-lang {
+  position: absolute; top: 1rem; inset-inline-end: 1rem; background: var(--card); color: var(--green-900);
+  border-color: var(--border);
+}
+
+/* ---------- Arabe : lecture de droite à gauche ---------- */
+[dir="rtl"] body { font-family: 'Segoe UI', Tahoma, 'Noto Naskh Arabic', 'Inter', sans-serif; }
+@media (max-width: 999px) {
+  [dir="rtl"] .side-menu { left: auto; right: 0; transform: translateX(102%); box-shadow: -8px 0 32px rgba(15, 61, 39, 0.25); }
+  [dir="rtl"] .side-menu.open { transform: translateX(0); }
+}
+[dir="rtl"] .alert-banner { border-left: 1px solid #f3d78b; border-right: 5px solid #f57c00; }
+[dir="rtl"] .side-link { text-align: right; }
+[dir="rtl"] .auth-forgot { text-align: left; }
+[dir="rtl"] .alert-item { padding-left: 0; padding-right: 0.7rem; border-left: none; border-right: 3px solid #f57c00; }
+[dir="rtl"] .alert-item.alert-over { border-right-color: #c62828; }
+[dir="rtl"] .toast-close { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .expense-amount { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .month-nav button, [dir="rtl"] .alert-link { unicode-bidi: plaintext; }
+[dir="rtl"] .month-nav button:not(.month-toggle) { transform: scaleX(-1); }
+[dir="rtl"] .expense-form .color-trigger { text-align: right; }
+/* Graphiques et sélecteur de couleur restent de gauche à droite (axes, dégradés). */
+[dir="rtl"] .recharts-wrapper, [dir="rtl"] .color-square, [dir="rtl"] .color-hue { direction: ltr; }
+[dir="rtl"] input[type="number"], [dir="rtl"] input[type="email"], [dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="date"] { text-align: right; }
+[dir="rtl"] input[type="email"], [dir="rtl"] input[type="password"] { direction: ltr; }
+[dir="rtl"] .balance-value, [dir="rtl"] .expense-amount, [dir="rtl"] .account-balance {
+  direction: ltr; unicode-bidi: isolate; text-align: right;
+}
+[dir="rtl"] .balance-value { display: block; }

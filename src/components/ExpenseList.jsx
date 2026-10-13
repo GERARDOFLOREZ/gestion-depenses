@@ -3,6 +3,7 @@ import { exportExpensesToCSV } from '../utils/csvExport';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
 import ExpenseItem from './ExpenseItem';
+import { t } from '../i18n';
 
 function ExpenseList({ onEdit }) {
   const { expenses } = useExpenses();
@@ -12,7 +13,7 @@ function ExpenseList({ onEdit }) {
   if (expenses.length === 0) {
     return (
       <div className="expense-list-empty">
-        <p>Aucune dépense enregistrée pour le moment.</p>
+        <p>{t('Aucune dépense enregistrée pour le moment.')}</p>
       </div>
     );
   }
@@ -24,9 +25,9 @@ function ExpenseList({ onEdit }) {
   return (
     <section className="expense-list-section">
       <div className="expense-list-header">
-        <h2>Historique des dépenses ({expenses.length})</h2>
+        <h2>{t('Historique des dépenses ({count})', { count: expenses.length })}</h2>
         <button type="button" className="export-btn" onClick={handleExport}>
-          📥 Exporter en CSV
+          📥 {t('Exporter en CSV')}
         </button>
       </div>
       <ul className="expense-list">

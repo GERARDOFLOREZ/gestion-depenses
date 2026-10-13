@@ -2,6 +2,7 @@ import { useExpenses } from '../hooks/useExpenses';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
 import { formatAmount, formatDate } from '../utils/formatters';
+import { t } from '../i18n';
 
 function ExpenseItem({ expense, onEdit }) {
   const { deleteExpense } = useExpenses();
@@ -12,7 +13,7 @@ function ExpenseItem({ expense, onEdit }) {
   const account = getAccount(expense.account_id);
 
   const handleDelete = () => {
-    if (window.confirm(`Supprimer la dépense "${expense.label}" ?`)) {
+    if (window.confirm(t('Supprimer la dépense "{label}" ?', { label: expense.label }))) {
       deleteExpense(expense.id);
     }
   };
@@ -39,7 +40,7 @@ function ExpenseItem({ expense, onEdit }) {
       <button
         className="expense-edit-btn"
         onClick={() => onEdit(expense)}
-        aria-label={`Modifier ${expense.label}`}
+        aria-label={t('Modifier {label}', { label: expense.label })}
       >
         ✏️
       </button>
@@ -47,7 +48,7 @@ function ExpenseItem({ expense, onEdit }) {
       <button
         className="expense-delete-btn"
         onClick={handleDelete}
-        aria-label={`Supprimer ${expense.label}`}
+        aria-label={t('Supprimer {label}', { label: expense.label })}
       >
         🗑️
       </button>
