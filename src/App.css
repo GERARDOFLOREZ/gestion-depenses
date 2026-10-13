@@ -1428,3 +1428,13 @@ body { color: var(--text); }
   direction: ltr; unicode-bidi: isolate; text-align: right;
 }
 [dir="rtl"] .balance-value { display: block; }
+
+/* ---------- En-tête sur téléphone : boutons en haut, titre dessous ---------- */
+@media (max-width: 699px) {
+  .app-header-top { flex-wrap: wrap; row-gap: 1rem; }
+  .app-header-top .menu-btn { order: 1; }
+  .app-header-top .header-actions { order: 2; margin-inline-start: auto; flex-wrap: nowrap; gap: 0.4rem; }
+  .app-header-top .header-title { order: 3; flex: 0 0 100%; }
+  .header-title h1 { font-size: 1.35rem; line-height: 1.2; }
+  .header-actions .lang-select { height: 2.3rem; }
+}
