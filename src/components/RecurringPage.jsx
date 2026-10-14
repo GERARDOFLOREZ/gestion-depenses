@@ -34,7 +34,7 @@ function RecurringPage() {
   const [form, setForm] = useState({
     type: 'expense', label: '', amount: '', category: 'logement',
     account_id: '', day: String(new Date().getDate()), start: getTodayISO(),
-    every: '1', unit: 'month',
+    every: '1', unit: 'month', date_mode: 'exact',
   });
   const [error, setError] = useState('');
 
@@ -44,7 +44,7 @@ function RecurringPage() {
   const currency = getAccountCurrency(accountValue);
 
   const setType = (type) =>
-    setForm({ ...form, type, category: type === 'expense' ? 'logement' : 'salaire' });
+    setForm({ ...form, type, date_mode: type === 'expense' ? form.date_mode : 'exact', category: type === 'expense' ? 'logement' : 'salaire' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +65,7 @@ function RecurringPage() {
       active: true,
       // Envoyés seulement si ≠ mensuel : un ancien schéma continue de fonctionner pour « chaque mois ».
       ...(every !== 1 || form.unit !== 'month' ? { interval_count: every, interval_unit: form.unit } : {}),
+      ...(form.type === 'expense' && form.date_mode === 'deadline' ? { date_mode: 'deadline' } : {}),
     });
     if (err) return setError(t("Impossible d'enregistrer (base de données à mettre à jour ?)."));
     setForm({ ...form, label: '', amount: '' });
@@ -98,7 +99,7 @@ function RecurringPage() {
           </div>
           <div className="form-group">
             <label htmlFor="rec-start">{t('Première échéance')}</label>
-            <input id="rec-start" type="date" value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value })} />
+            <input id="rec-start" type="date" value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value, day: e.target.value ? String(Number(e.target.value.slice(8, 10))) : form.day })} />
           </div>
         </div>
         <div className="form-row">
@@ -113,6 +114,24 @@ function RecurringPage() {
             </select>
           </div>
         </div>
+        {form.type === 'expense' && (
+          <div className="form-group">
+            <span className="field-label">{t('Échéance')}</span>
+            <div className="segmented segmented-small">
+              <button type="button" className={form.date_mode === 'exact' ? 'on' : ''} onClick={() => setForm({ ...form, date_mode: 'exact' })}>
+                📅 {t('Date précise')}
+              </button>
+              <button type="button" className={form.date_mode === 'deadline' ? 'on' : ''} onClick={() => setForm({ ...form, date_mode: 'deadline' })}>
+                ⏳ {t('Au plus tard')}
+              </button>
+            </div>
+            <p className="hint">
+              {form.date_mode === 'deadline'
+                ? t("À chaque échéance, la dépense apparaît dans « À venir » avec une date limite : vous la payez quand vous voulez avant cette date, puis vous la marquez comme payée.")
+                : t("La dépense est ajoutée automatiquement, comme déjà payée, à la date indiquée.")}
+            </p>
+          </div>
+        )}
         {usesDay && (
           <div className="form-group">
             <label htmlFor="rec-day">{t('Jour du mois')}</label>
@@ -152,7 +171,7 @@ function RecurringPage() {
                   <div className="expense-info">
                     <p className="expense-label">{r.label}</p>
                     <p className="expense-date">
-                      {describeRecurrence(r)}{getAccount(r.account_id) ? ` · ${getAccount(r.account_id).name}` : ''}
+                      {describeRecurrence(r)}{r.date_mode === 'deadline' ? ` · ⏳ ${t('au plus tard')}` : ''}{getAccount(r.account_id) ? ` · ${getAccount(r.account_id).name}` : ''}
                     </p>
                   </div>
                   <span className={`expense-amount ${r.type === 'income' ? 'income-amount' : ''}`}>

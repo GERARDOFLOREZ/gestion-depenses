@@ -80,6 +80,10 @@ export function useAutomation() {
               category: rec.category,
               date,
               ...(rec.account_id ? { account_id: rec.account_id } : {}),
+              // « Au plus tard » : l'opération attend d'être payée dans « À venir ».
+              ...(rec.date_mode === 'deadline' && rec.type === 'expense'
+                ? { status: 'planned', date_mode: 'deadline' }
+                : {}),
             };
             if (rec.type === 'income') await incomeCtx.addIncome(payload);
             else await expenseCtx.addExpense(payload);

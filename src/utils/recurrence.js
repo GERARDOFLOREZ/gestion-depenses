@@ -42,10 +42,14 @@ function lastGenerated(rec) {
 /** Dates (<= aujourd'hui) pas encore générées pour une opération récurrente. */
 export function pendingDates(rec, today) {
   const last = lastGenerated(rec);
+  const deadline = rec.date_mode === 'deadline';
   const out = [];
   for (let k = 0; k < 5000; k += 1) {
     const date = occurrence(rec, k);
-    if (date > today) break;
+    if (deadline) {
+      // « Au plus tard » : l'échéance apparaît dès que le cycle précédent est écoulé (une seule d'avance).
+      if (k > 0 && occurrence(rec, k - 1) > today) break;
+    } else if (date > today) break;
     if (date >= rec.start_date && (!last || date > last)) out.push(date);
   }
   return out;

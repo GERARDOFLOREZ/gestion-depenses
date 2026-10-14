@@ -47,7 +47,9 @@ function PlannedItem({ expense, onEdit }) {
       <div className="expense-info">
         <p className="expense-label">{expense.label}</p>
         <p className="expense-date">
-          {t('Prévue le {date}', { date: formatDate(expense.date) })} ·{' '}
+          {expense.date_mode === 'deadline'
+            ? t('Au plus tard le {date}', { date: formatDate(expense.date) })
+            : t('Prévue le {date}', { date: formatDate(expense.date) })} ·{' '}
           <span className={due.late ? 'late-text' : ''}>{due.text}</span>
           {account ? ` · ${account.name}` : ''}
         </p>

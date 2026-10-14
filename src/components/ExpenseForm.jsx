@@ -19,6 +19,7 @@ const emptyForm = {
   label: '',
   ...emptyAmount,
   status: 'done',
+  date_mode: 'exact',
   category: CATEGORIES[0].id,
   date: getTodayISO(),
   account_id: '',
@@ -46,6 +47,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
         label: editingExpense.label,
         ...amountFromRow(editingExpense),
         status: editingExpense.status || 'done',
+        date_mode: editingExpense.date_mode || 'exact',
         category: editingExpense.category,
         date: editingExpense.date,
         account_id: editingExpense.account_id || '',
@@ -65,6 +67,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
     setForm((prev) => ({
       ...prev,
       status,
+      date_mode: status === 'planned' ? prev.date_mode : 'exact',
       // Une dépense prévue part par défaut pour demain ; repasser à « faite » remet aujourd'hui.
       date: status === 'planned' && prev.date <= getTodayISO() ? tomorrowISO() : status === 'done' ? getTodayISO() : prev.date,
     }));
@@ -94,6 +97,9 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       ...(accountValue ? { account_id: accountValue } : {}),
       // « status » n'est envoyé que s'il sert (prévue, ou modification d'une ligne qui en a un) : base ancienne compatible.
       ...(form.status === 'planned' || (isEditing && 'status' in editingExpense) ? { status: form.status } : {}),
+      ...(form.status === 'planned' && form.date_mode === 'deadline' || (isEditing && 'date_mode' in editingExpense)
+        ? { date_mode: form.status === 'planned' ? form.date_mode : 'exact' }
+        : {}),
     };
 
     if (isEditing) {
@@ -158,6 +164,16 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
           </button>
         </div>
         {form.status === 'planned' && (
+          <div className="segmented segmented-small">
+            <button type="button" className={form.date_mode === 'exact' ? 'on' : ''} onClick={() => setForm((p) => ({ ...p, date_mode: 'exact' }))}>
+              📅 {t('Date précise')}
+            </button>
+            <button type="button" className={form.date_mode === 'deadline' ? 'on' : ''} onClick={() => setForm((p) => ({ ...p, date_mode: 'deadline' }))}>
+              ⏳ {t('Au plus tard')}
+            </button>
+          </div>
+        )}
+        {form.status === 'planned' && (
           <p className="hint">
             {t("Une dépense prévue n'est comptée ni dans vos soldes ni dans vos budgets tant que vous ne l'avez pas marquée comme payée. Elle apparaît dans « À venir » et dans votre solde prévisionnel.")}
           </p>
@@ -183,7 +199,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       )}
 
       <div className="form-group">
-        <label htmlFor="date">{form.status === 'planned' ? t('Date prévue') : t('Date')}</label>
+        <label htmlFor="date">{form.status === 'planned' ? (form.date_mode === 'deadline' ? t('À payer au plus tard le') : t('Date prévue')) : t('Date')}</label>
         <input
           type="date"
           id="date"

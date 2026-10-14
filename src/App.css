@@ -1473,3 +1473,4 @@ body { color: var(--text); }
 .upcoming-group span { color: var(--muted); }
 .upcoming-forecast strong.negative { color: #c62828; }
 .planned-section { padding: 1rem; margin: 1rem 0; border-radius: var(--radius); background: var(--card); }
+.segmented-small { margin-top: 0.5rem; } .segmented-small button { font-size: 0.85rem; padding: 0.45rem 0.6rem; }

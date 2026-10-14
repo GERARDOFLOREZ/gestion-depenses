@@ -275,7 +275,15 @@ export const translations = {
     "Prévu": "Planned",
     "Solde actuel": "Current balance",
     "Solde prévisionnel": "Forecast balance",
-    "Voir les dépenses prévues →": "See planned expenses →"
+    "Voir les dépenses prévues →": "See planned expenses →",
+    "Date précise": "Exact date",
+    "Au plus tard": "By the latest",
+    "À payer au plus tard le": "To be paid by",
+    "Au plus tard le {date}": "Due by {date}",
+    "Échéance": "Due date",
+    "À chaque échéance, la dépense apparaît dans « À venir » avec une date limite : vous la payez quand vous voulez avant cette date, puis vous la marquez comme payée.": "At each due date, the expense appears under \"Upcoming\" with a deadline: pay it whenever you like before then, then mark it as paid.",
+    "La dépense est ajoutée automatiquement, comme déjà payée, à la date indiquée.": "The expense is added automatically, as already paid, on the given date.",
+    "au plus tard": "by the latest"
   },
   "es": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "Tus cuentas usan monedas distintas: los gráficos se muestran en {code}. Cambia la moneda aquí o elige una cuenta.",
@@ -552,7 +560,15 @@ export const translations = {
     "Prévu": "Previsto",
     "Solde actuel": "Saldo actual",
     "Solde prévisionnel": "Saldo previsto",
-    "Voir les dépenses prévues →": "Ver gastos previstos →"
+    "Voir les dépenses prévues →": "Ver gastos previstos →",
+    "Date précise": "Fecha exacta",
+    "Au plus tard": "A más tardar",
+    "À payer au plus tard le": "A pagar a más tardar el",
+    "Au plus tard le {date}": "A más tardar el {date}",
+    "Échéance": "Vencimiento",
+    "À chaque échéance, la dépense apparaît dans « À venir » avec une date limite : vous la payez quand vous voulez avant cette date, puis vous la marquez comme payée.": "En cada vencimiento, el gasto aparece en «Próximos» con una fecha límite: lo pagas cuando quieras antes de esa fecha y luego lo marcas como pagado.",
+    "La dépense est ajoutée automatiquement, comme déjà payée, à la date indiquée.": "El gasto se añade automáticamente, como ya pagado, en la fecha indicada.",
+    "au plus tard": "a más tardar"
   },
   "ar": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "حساباتك بعملات مختلفة: الرسوم البيانية معروضة بعملة {code}. غيّر العملة هنا أو اختر حسابًا.",
@@ -829,6 +845,14 @@ export const translations = {
     "Prévu": "المتوقع",
     "Solde actuel": "الرصيد الحالي",
     "Solde prévisionnel": "الرصيد المتوقع",
-    "Voir les dépenses prévues →": "عرض المصروفات المخططة ←"
+    "Voir les dépenses prévues →": "عرض المصروفات المخططة ←",
+    "Date précise": "تاريخ محدد",
+    "Au plus tard": "في موعد أقصاه",
+    "À payer au plus tard le": "يُدفع في موعد أقصاه",
+    "Au plus tard le {date}": "في موعد أقصاه {date}",
+    "Échéance": "الاستحقاق",
+    "À chaque échéance, la dépense apparaît dans « À venir » avec une date limite : vous la payez quand vous voulez avant cette date, puis vous la marquez comme payée.": "عند كل استحقاق يظهر المصروف ضمن «القادمة» مع تاريخ أقصى: تدفعه متى شئت قبل ذلك التاريخ ثم تضع عليه علامة «مدفوع».",
+    "La dépense est ajoutée automatiquement, comme déjà payée, à la date indiquée.": "يُضاف المصروف تلقائيًا، كمدفوع، في التاريخ المحدد.",
+    "au plus tard": "في موعد أقصاه"
   }
 };
