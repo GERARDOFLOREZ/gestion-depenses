@@ -1,7 +1,7 @@
 import { useIncomes } from '../hooks/useIncomes';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
-import { formatAmount, formatDate } from '../utils/formatters';
+import { formatAmountOrRange, formatDate } from '../utils/formatters';
 import { t } from '../i18n';
 
 function IncomeItem({ income, onEdit }) {
@@ -36,7 +36,7 @@ function IncomeItem({ income, onEdit }) {
       </div>
 
       <span className="expense-amount income-amount">
-        + {formatAmount(income.amount, currency)}
+        + {formatAmountOrRange(income, currency)}
       </span>
 
       <button

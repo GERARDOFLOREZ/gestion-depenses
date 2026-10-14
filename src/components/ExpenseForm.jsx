@@ -5,11 +5,20 @@ import { useCategories } from '../hooks/useCategories';
 import { useView } from '../hooks/useView';
 import { CATEGORIES } from '../data/categories';
 import { getTodayISO } from '../utils/formatters';
+import { emptyAmount, amountFromRow, amountPayload } from '../utils/amounts';
+import AmountField from './AmountField';
 import { t } from '../i18n';
+
+function tomorrowISO() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return getTodayISO(d);
+}
 
 const emptyForm = {
   label: '',
-  amount: '',
+  ...emptyAmount,
+  status: 'done',
   category: CATEGORIES[0].id,
   date: getTodayISO(),
   account_id: '',
@@ -35,7 +44,8 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setForm({
         label: editingExpense.label,
-        amount: editingExpense.amount,
+        ...amountFromRow(editingExpense),
+        status: editingExpense.status || 'done',
         category: editingExpense.category,
         date: editingExpense.date,
         account_id: editingExpense.account_id || '',
@@ -51,6 +61,14 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const setStatus = (status) =>
+    setForm((prev) => ({
+      ...prev,
+      status,
+      // Une dépense prévue part par défaut pour demain ; repasser à « faite » remet aujourd'hui.
+      date: status === 'planned' && prev.date <= getTodayISO() ? tomorrowISO() : status === 'done' ? getTodayISO() : prev.date,
+    }));
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -58,17 +76,24 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       setError(t('Le libellé est obligatoire.'));
       return;
     }
-    if (!form.amount || Number(form.amount) <= 0) {
-      setError(t('Le montant doit être un nombre positif.'));
+    const { fields, error: amountError } = amountPayload(form, editingExpense);
+    if (amountError) {
+      setError(
+        amountError === 'order'
+          ? t('Le montant maximum doit être supérieur ou égal au minimum.')
+          : t('Le montant doit être un nombre positif.')
+      );
       return;
     }
 
     const payload = {
       label: form.label.trim(),
-      amount: Number(form.amount),
+      ...fields,
       category: form.category,
       date: form.date,
       ...(accountValue ? { account_id: accountValue } : {}),
+      // « status » n'est envoyé que s'il sert (prévue, ou modification d'une ligne qui en a un) : base ancienne compatible.
+      ...(form.status === 'planned' || (isEditing && 'status' in editingExpense) ? { status: form.status } : {}),
     };
 
     if (isEditing) {
@@ -88,7 +113,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
 
   return (
     <form className="expense-form" onSubmit={handleSubmit} ref={formRef}>
-      <h2>{isEditing ? t('Modifier la dépense') : t('Ajouter une dépense')}</h2>
+      <h2>{isEditing ? t('Modifier la dépense') : form.status === 'planned' ? t('Ajouter une dépense prévue') : t('Ajouter une dépense')}</h2>
 
       {error && <p className="form-error">{error}</p>}
 
@@ -104,18 +129,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="amount">{t('Montant')} ({currency.symbol})</label>
-        <input
-          type="number"
-          id="amount"
-          name="amount"
-          value={form.amount}
-          onChange={handleChange}
-          step="0.01"
-          min="0"
-        />
-      </div>
+      <AmountField id="amount" form={form} setForm={setForm} onChange={handleChange} symbol={currency.symbol} />
 
       <div className="form-group">
         <label htmlFor="category">{t('Catégorie')}</label>
@@ -131,6 +145,23 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
             </option>
           ))}
         </select>
+      </div>
+
+      <div className="form-group">
+        <span className="field-label">{t('Cette dépense est…')}</span>
+        <div className="segmented">
+          <button type="button" className={form.status === 'done' ? 'on' : ''} onClick={() => setStatus('done')}>
+            ✅ {t('Déjà faite')}
+          </button>
+          <button type="button" className={form.status === 'planned' ? 'on' : ''} onClick={() => setStatus('planned')}>
+            🗓️ {t('Prévue (à venir)')}
+          </button>
+        </div>
+        {form.status === 'planned' && (
+          <p className="hint">
+            {t("Une dépense prévue n'est comptée ni dans vos soldes ni dans vos budgets tant que vous ne l'avez pas marquée comme payée. Elle apparaît dans « À venir » et dans votre solde prévisionnel.")}
+          </p>
+        )}
       </div>
 
       {accounts.length > 0 && (
@@ -152,7 +183,7 @@ function ExpenseForm({ editingExpense, onFinishEdit }) {
       )}
 
       <div className="form-group">
-        <label htmlFor="date">{t('Date')}</label>
+        <label htmlFor="date">{form.status === 'planned' ? t('Date prévue') : t('Date')}</label>
         <input
           type="date"
           id="date"

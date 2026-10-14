@@ -12,7 +12,7 @@ export function useExpenses() {
     throw new Error("useExpenses doit être utilisé à l'intérieur d'un ExpenseProvider");
   }
 
-  const { expenses: allExpenses, loading, addExpense, updateExpense, deleteExpense, filters, setFilters } = context;
+  const { expenses: allExpenses, plannedExpenses: allPlanned, loading, addExpense, updateExpense, deleteExpense, filters, setFilters } = context;
   const matchesView = view ? view.matchesView : alwaysTrue;
 
   const updateFilter = (key, value) => {
@@ -36,6 +36,16 @@ export function useExpenses() {
     });
   }, [viewExpenses, filters]);
 
+  // Dépenses prévues : on respecte le compte choisi, pas le mois (elles sont à venir).
+  const accountId = view ? view.accountId : 'all';
+  const plannedExpenses = useMemo(
+    () =>
+      allPlanned
+        .filter((e) => accountId === 'all' || e.account_id === accountId)
+        .sort((a, b) => a.date.localeCompare(b.date)),
+    [allPlanned, accountId]
+  );
+
   const totalAmount = viewExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   const filteredTotalAmount = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
 
@@ -43,6 +53,7 @@ export function useExpenses() {
     expenses: filteredExpenses,
     viewExpenses,
     allExpenses,
+    plannedExpenses,
     loading,
     addExpense,
     updateExpense,

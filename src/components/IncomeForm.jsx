@@ -6,10 +6,12 @@ import { useView } from '../hooks/useView';
 import { INCOME_CATEGORIES } from '../data/incomeCategories';
 import { getTodayISO } from '../utils/formatters';
 import { t } from '../i18n';
+import { emptyAmount, amountFromRow, amountPayload } from '../utils/amounts';
+import AmountField from './AmountField';
 
 const emptyForm = {
   label: '',
-  amount: '',
+  ...emptyAmount,
   category: INCOME_CATEGORIES[0].id,
   date: getTodayISO(),
   account_id: '',
@@ -35,7 +37,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setForm({
         label: editingIncome.label,
-        amount: editingIncome.amount,
+        ...amountFromRow(editingIncome),
         category: editingIncome.category,
         date: editingIncome.date,
         account_id: editingIncome.account_id || '',
@@ -58,14 +60,19 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
       setError(t('Le libellé est obligatoire.'));
       return;
     }
-    if (!form.amount || Number(form.amount) <= 0) {
-      setError(t('Le montant doit être un nombre positif.'));
+    const { fields, error: amountError } = amountPayload(form, editingIncome);
+    if (amountError) {
+      setError(
+        amountError === 'order'
+          ? t('Le montant maximum doit être supérieur ou égal au minimum.')
+          : t('Le montant doit être un nombre positif.')
+      );
       return;
     }
 
     const payload = {
       label: form.label.trim(),
-      amount: Number(form.amount),
+      ...fields,
       category: form.category,
       date: form.date,
       ...(accountValue ? { account_id: accountValue } : {}),
@@ -104,18 +111,7 @@ function IncomeForm({ editingIncome, onFinishEdit }) {
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="income-amount">{t('Montant')} ({currency.symbol})</label>
-        <input
-          type="number"
-          id="income-amount"
-          name="amount"
-          value={form.amount}
-          onChange={handleChange}
-          step="0.01"
-          min="0"
-        />
-      </div>
+      <AmountField id="income-amount" form={form} setForm={setForm} onChange={handleChange} symbol={currency.symbol} />
 
       <div className="form-group">
         <label htmlFor="income-category">{t('Catégorie')}</label>

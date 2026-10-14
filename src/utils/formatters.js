@@ -38,8 +38,11 @@ export function formatDate(dateString) {
   }).format(new Date(dateString));
 }
 
-export function getTodayISO() {
-  return new Date().toISOString().split('T')[0];
+export function getTodayISO(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 export function getMonthISO(date = new Date()) {
@@ -70,4 +73,21 @@ export function formatMonthName(month) {
 export function formatShortMonth(month) {
   const [y, m] = month.split('-').map(Number);
   return new Intl.DateTimeFormat(intlLocale(), { month: 'short' }).format(new Date(y, m - 1, 1));
+}
+
+/** « 100,00 DH » ou « 100,00 DH – 150,00 DH » pour une fourchette. */
+export function formatAmountOrRange(row, currency) {
+  if (row.amount_min != null && row.amount_max != null) {
+    return `${formatAmount(row.amount_min, currency)} – ${formatAmount(row.amount_max, currency)}`;
+  }
+  return formatAmount(row.amount, currency);
+}
+
+/** Nombre de jours entre aujourd'hui et une date AAAA-MM-JJ (négatif si passée). */
+export function daysFromToday(dateString) {
+  const [y, m, d] = dateString.split('-').map(Number);
+  const target = Date.UTC(y, m - 1, d);
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target - today) / 86400000);
 }

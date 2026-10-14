@@ -20,6 +20,8 @@ import ExpenseChart from './components/ExpenseChart';
 import MonthlyChart from './components/MonthlyChart';
 import BudgetAlertsBanner from './components/BudgetAlertsBanner';
 import BudgetToasts from './components/BudgetToasts';
+import UpcomingCard from './components/UpcomingCard';
+import PlannedExpenses from './components/PlannedExpenses';
 import { useBudgetToasts } from './hooks/useBudgetAlerts';
 import AccountBalances from './components/AccountBalances';
 import AccountsPage from './components/AccountsPage';
@@ -37,7 +39,7 @@ import './App.css';
 
 const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
 
-function Dashboard({ onSeeBudgets }) {
+function Dashboard({ onSeeBudgets, onSeePlanned }) {
   const { viewCurrencyCode, isMixed } = useView();
   return (
     <section className="tab-panel">
@@ -50,6 +52,7 @@ function Dashboard({ onSeeBudgets }) {
         </p>
       </div>
       <BudgetAlertsBanner onSeeBudgets={onSeeBudgets} />
+      <UpcomingCard onSee={onSeePlanned} />
       <AccountBalances />
       <MonthlyChart />
       <ExpenseChart />
@@ -172,7 +175,7 @@ function Shell({
       {VIEW_TABS.includes(activeTab) && <ViewBar />}
 
       <main className="app-main">
-        {activeTab === 'dashboard' && <Dashboard onSeeBudgets={() => setActiveTab('budgets')} />}
+        {activeTab === 'dashboard' && <Dashboard onSeeBudgets={() => setActiveTab('budgets')} onSeePlanned={() => setActiveTab('expenses')} />}
 
         {activeTab === 'incomes' && (
           <section className="tab-panel">
@@ -185,6 +188,7 @@ function Shell({
           <section className="tab-panel">
             <BudgetAlertsBanner onSeeBudgets={() => setActiveTab('budgets')} />
             <ExpenseForm editingExpense={editingExpense} onFinishEdit={() => setEditingExpense(null)} />
+            <PlannedExpenses onEdit={setEditingExpense} />
             <ExpenseFilters />
             <ExpenseList onEdit={setEditingExpense} />
           </section>

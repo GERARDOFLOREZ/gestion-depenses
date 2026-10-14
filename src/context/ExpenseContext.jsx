@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
 
@@ -13,9 +13,13 @@ export const ExpenseContext = createContext(null);
 
 export function ExpenseProvider({ children }) {
   const { user } = useAuth();
-  const [expenses, setExpenses] = useState([]);
+  const [rows, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(defaultExpenseFilters);
+
+  // Les dépenses « prévues » ne comptent ni dans les soldes ni dans les budgets tant qu'elles ne sont pas payées.
+  const expenses = useMemo(() => rows.filter((e) => e.status !== 'planned'), [rows]);
+  const plannedExpenses = useMemo(() => rows.filter((e) => e.status === 'planned'), [rows]);
 
   const fetchExpenses = useCallback(async () => {
     if (!user) {
@@ -81,7 +85,7 @@ export function ExpenseProvider({ children }) {
 
   return (
     <ExpenseContext.Provider
-      value={{ expenses, loading, filters, setFilters, refetch: fetchExpenses, addExpense, updateExpense, deleteExpense }}
+      value={{ expenses, plannedExpenses, loading, filters, setFilters, refetch: fetchExpenses, addExpense, updateExpense, deleteExpense }}
     >
       {children}
     </ExpenseContext.Provider>

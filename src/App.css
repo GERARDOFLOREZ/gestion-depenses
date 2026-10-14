@@ -1439,3 +1439,37 @@ body { color: var(--text); }
   .header-actions .lang-select { height: 2.3rem; }
 }
 .expense-form, .income-form { scroll-margin-top: 0.75rem; }
+
+/* ---------- Dépenses prévues & fourchettes ---------- */
+.field-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
+.range-row { display: flex; align-items: center; gap: 0.5rem; }
+.range-row input { flex: 1; min-width: 0; }
+.expense-form .range-toggle, .income-form .range-toggle {
+  width: auto; margin-top: 0.4rem; padding: 0.15rem 0; background: none; box-shadow: none; border-radius: 0;
+  color: var(--green-700); font-size: 0.82rem; font-weight: 600; text-decoration: underline; transform: none;
+}
+.expense-form .range-toggle:hover, .income-form .range-toggle:hover { background: none; box-shadow: none; transform: none; }
+.planned-section { border: 1px dashed var(--green-600); }
+.planned-totals { padding: 0 0.25rem 0.5rem; font-size: 0.9rem; color: var(--muted); }
+.planned-totals p { margin: 0.1rem 0; }
+.planned-item { flex-wrap: wrap; }
+.planned-item.is-late { border-inline-start: 4px solid #c62828; }
+.late-text { color: #c62828; font-weight: 700; }
+.planned-pay-btn { background: #e8f5e9; }
+.pay-row {
+  flex: 0 0 100%; order: 10; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end;
+  padding: 0.6rem; margin-top: 0.4rem; background: var(--green-100, #e8f5e9); border-radius: 10px;
+}
+.pay-row label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.78rem; font-weight: 600; flex: 1; min-width: 130px; }
+.pay-row input { padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px; font: inherit; }
+.pay-row .pay-confirm {
+  border: none; border-radius: 10px; padding: 0.55rem 0.9rem; font-weight: 700; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+}
+.upcoming-card { border: 1px dashed var(--green-600); }
+.upcoming-alert { background: #fff3e0; color: #b45309; padding: 0.55rem 0.75rem; border-radius: 10px; font-size: 0.88rem; margin: 0 0 0.6rem; }
+.upcoming-group { display: grid; gap: 0.35rem; padding: 0.5rem 0; border-top: 1px solid var(--border); }
+.upcoming-group > div { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.92rem; }
+.upcoming-group span { color: var(--muted); }
+.upcoming-forecast strong.negative { color: #c62828; }
+.planned-section { padding: 1rem; margin: 1rem 0; border-radius: var(--radius); background: var(--card); }

@@ -3,7 +3,7 @@ import { t } from '../i18n';
 export function exportExpensesToCSV(expenses, { getCategory, getAccount } = {}) {
   if (expenses.length === 0) return;
 
-  const headers = [t('Libellé'), t('Montant'), t('Devise'), t('Catégorie'), t('Compte'), t('Date')];
+  const headers = [t('Libellé'), t('Montant'), t('Montant minimum'), t('Montant maximum'), t('Devise'), t('Catégorie'), t('Compte'), t('Date')];
 
   const rows = expenses.map((exp) => {
     const category = getCategory ? getCategory(exp.category) : { label: exp.category };
@@ -11,6 +11,8 @@ export function exportExpensesToCSV(expenses, { getCategory, getAccount } = {}) 
     return [
       escapeCSVValue(exp.label),
       exp.amount,
+      exp.amount_min ?? '',
+      exp.amount_max ?? '',
       account?.currency || '',
       escapeCSVValue(category.label),
       escapeCSVValue(account?.name || ''),
