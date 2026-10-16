@@ -21,11 +21,13 @@ export function useCategories() {
       custom: true,
     }));
 
-    const expenseCategories = [...CATEGORIES.map(translateLabel), ...custom.filter((c) => c.kind === 'expense')];
-    const incomeCategories = [
+    // « Autre » reste toujours en dernière position, même avec des catégories personnalisées.
+    const autreLast = (list) => [...list.filter((c) => c.id !== 'autre'), ...list.filter((c) => c.id === 'autre')];
+    const expenseCategories = autreLast([...CATEGORIES.map(translateLabel), ...custom.filter((c) => c.kind === 'expense')]);
+    const incomeCategories = autreLast([
       ...INCOME_CATEGORIES.map(translateLabel),
       ...custom.filter((c) => c.kind === 'income'),
-    ];
+    ]);
 
     return {
       expenseCategories,

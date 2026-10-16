@@ -306,7 +306,20 @@ export const translations = {
     "Nom du nouveau compte espèces": "Name of the new cash account",
     "Impossible de renommer le compte.": "Unable to rename the account.",
     "Nouveau nom du compte": "New account name",
-    "Renommer le compte {name}": "Rename account {name}"
+    "Renommer le compte {name}": "Rename account {name}",
+    "Le montant dépasse le reste à régler.": "The amount exceeds what is left to settle.",
+    "Choisissez le compte d'où l'argent sort.": "Choose the account the money comes out of.",
+    "Choisissez le compte qui reçoit l'argent.": "Choose the account that receives the money.",
+    "Impossible d'enregistrer le règlement (base de données à mettre à jour ?).": "Unable to save the payment (database to update?).",
+    "Annuler ce règlement ?": "Cancel this payment?",
+    "Annuler ce règlement": "Cancel this payment",
+    "Je règle cette dette : d'où sort l'argent ?": "I am paying this debt: where does the money come from?",
+    "On me règle : où va l'argent ?": "I am being paid: where does the money go?",
+    "Aucun compte en {currency}. Créez-en un dans « Comptes ».": "No account in {currency}. Create one in “Accounts”.",
+    "Montant réglé": "Amount settled",
+    "Payer": "Pay",
+    "Recevoir": "Receive",
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "Delete this debt? Its payments will also be reversed on your accounts."
   },
   "es": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "Tus cuentas usan monedas distintas: los gráficos se muestran en {code}. Cambia la moneda aquí o elige una cuenta.",
@@ -614,7 +627,20 @@ export const translations = {
     "Nom du nouveau compte espèces": "Nombre de la nueva cuenta de efectivo",
     "Impossible de renommer le compte.": "No se pudo renombrar la cuenta.",
     "Nouveau nom du compte": "Nuevo nombre de la cuenta",
-    "Renommer le compte {name}": "Renombrar la cuenta {name}"
+    "Renommer le compte {name}": "Renombrar la cuenta {name}",
+    "Le montant dépasse le reste à régler.": "El importe supera lo que queda por saldar.",
+    "Choisissez le compte d'où l'argent sort.": "Elija la cuenta de la que sale el dinero.",
+    "Choisissez le compte qui reçoit l'argent.": "Elija la cuenta que recibe el dinero.",
+    "Impossible d'enregistrer le règlement (base de données à mettre à jour ?).": "No se pudo guardar el pago (¿base de datos por actualizar?).",
+    "Annuler ce règlement ?": "¿Anular este pago?",
+    "Annuler ce règlement": "Anular este pago",
+    "Je règle cette dette : d'où sort l'argent ?": "Pago esta deuda: ¿de dónde sale el dinero?",
+    "On me règle : où va l'argent ?": "Me pagan: ¿adónde va el dinero?",
+    "Aucun compte en {currency}. Créez-en un dans « Comptes ».": "No hay cuenta en {currency}. Cree una en «Cuentas».",
+    "Montant réglé": "Importe saldado",
+    "Payer": "Pagar",
+    "Recevoir": "Recibir",
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "¿Eliminar esta deuda? Sus pagos también se anularán en sus cuentas."
   },
   "ar": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "حساباتك بعملات مختلفة: الرسوم البيانية معروضة بعملة {code}. غيّر العملة هنا أو اختر حسابًا.",
@@ -922,6 +948,19 @@ export const translations = {
     "Nom du nouveau compte espèces": "اسم حساب النقد الجديد",
     "Impossible de renommer le compte.": "تعذر إعادة تسمية الحساب.",
     "Nouveau nom du compte": "الاسم الجديد للحساب",
-    "Renommer le compte {name}": "إعادة تسمية الحساب {name}"
+    "Renommer le compte {name}": "إعادة تسمية الحساب {name}",
+    "Le montant dépasse le reste à régler.": "المبلغ يتجاوز المتبقي للتسوية.",
+    "Choisissez le compte d'où l'argent sort.": "اختر الحساب الذي يخرج منه المال.",
+    "Choisissez le compte qui reçoit l'argent.": "اختر الحساب الذي يستلم المال.",
+    "Impossible d'enregistrer le règlement (base de données à mettre à jour ?).": "تعذر حفظ التسوية (قاعدة البيانات تحتاج تحديثًا؟).",
+    "Annuler ce règlement ?": "إلغاء هذه التسوية؟",
+    "Annuler ce règlement": "إلغاء هذه التسوية",
+    "Je règle cette dette : d'où sort l'argent ?": "أسدّد هذا الدين: من أين يخرج المال؟",
+    "On me règle : où va l'argent ?": "يُسدَّد لي: أين يذهب المال؟",
+    "Aucun compte en {currency}. Créez-en un dans « Comptes ».": "لا يوجد حساب بعملة {currency}. أنشئ واحدًا في «الحسابات».",
+    "Montant réglé": "المبلغ المسدَّد",
+    "Payer": "دفع",
+    "Recevoir": "استلام",
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "حذف هذا الدين؟ ستُلغى تسوياته أيضًا من حساباتك."
   }
 };

@@ -13,10 +13,11 @@ export function ExtrasProvider({ children }) {
     ascending: true,
   });
   const debts = useSupabaseTable('debts');
+  const debtPayments = useSupabaseTable('debt_payments', { orderBy: 'date' });
 
   return (
     <ExtrasContext.Provider
-      value={{ accounts, transfers, goals, recurring, customCategories, debts }}
+      value={{ accounts, transfers, goals, recurring, customCategories, debts, debtPayments }}
     >
       {children}
     </ExtrasContext.Provider>

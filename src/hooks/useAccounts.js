@@ -20,7 +20,7 @@ export const getAccountType = (id) => {
 };
 
 export function useAccounts() {
-  const { accounts, transfers } = useExtras();
+  const { accounts, transfers, debtPayments } = useExtras();
   const expenseCtx = useContext(ExpenseContext);
   const incomeCtx = useContext(IncomeContext);
   const { currencyCode } = useCurrency();
@@ -51,8 +51,13 @@ export function useAccounts() {
       if (t.from_account_id in result) result[t.from_account_id] -= Number(t.amount);
       if (t.to_account_id in result) result[t.to_account_id] += Number(t.to_amount);
     });
+    // Règlement de dette : je paie (argent sort) ou on me paie (argent entre)
+    debtPayments.rows.forEach((p) => {
+      if (!(p.account_id in result)) return;
+      result[p.account_id] += p.direction === 'owed_to_me' ? Number(p.amount) : -Number(p.amount);
+    });
     return result;
-  }, [accounts.rows, transfers.rows, expenseCtx?.expenses, incomeCtx?.incomes]);
+  }, [accounts.rows, transfers.rows, debtPayments.rows, expenseCtx?.expenses, incomeCtx?.incomes]);
 
   return {
     accounts: rows,

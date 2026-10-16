@@ -1483,3 +1483,8 @@ body { color: var(--text); }
 .account-rename { flex: 1; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
 .account-rename input { flex: 1 1 140px; min-width: 0; }
 .account-rename button { padding: 0.4rem 0.7rem; font-size: 0.85rem; }
+.debt-pay { margin-top: 0.75rem; display: grid; gap: 0.5rem; }
+.debt-pay select, .debt-pay .inline-add input[type=date] { padding: 0.5rem; }
+.debt-pay .inline-add { flex-wrap: wrap; }
+.debt-payments { list-style: none; margin: 0.5rem 0 0; padding: 0; font-size: 0.85rem; color: var(--muted, #666); }
+.debt-payments li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
