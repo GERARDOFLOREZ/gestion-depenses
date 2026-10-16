@@ -298,7 +298,15 @@ export const translations = {
     "Compte espèces": "Cash account",
     "Un compte « Espèces » ({currency}) sera créé automatiquement.": "A “Cash” account ({currency}) will be created automatically.",
     "Enregistrer le retrait": "Record the withdrawal",
-    "Enregistrer le dépôt": "Record the deposit"
+    "Enregistrer le dépôt": "Record the deposit",
+    "Choisissez où va l'argent retiré.": "Choose where the withdrawn money goes.",
+    "Choisissez le compte espèces à déposer.": "Choose the cash account to deposit from.",
+    "Où va l'argent retiré ?": "Where does the withdrawn money go?",
+    "Nouveau compte espèces": "New cash account",
+    "Nom du nouveau compte espèces": "Name of the new cash account",
+    "Impossible de renommer le compte.": "Unable to rename the account.",
+    "Nouveau nom du compte": "New account name",
+    "Renommer le compte {name}": "Rename account {name}"
   },
   "es": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "Tus cuentas usan monedas distintas: los gráficos se muestran en {code}. Cambia la moneda aquí o elige una cuenta.",
@@ -598,7 +606,15 @@ export const translations = {
     "Compte espèces": "Cuenta de efectivo",
     "Un compte « Espèces » ({currency}) sera créé automatiquement.": "Se creará automáticamente una cuenta «Efectivo» ({currency}).",
     "Enregistrer le retrait": "Registrar el retiro",
-    "Enregistrer le dépôt": "Registrar el depósito"
+    "Enregistrer le dépôt": "Registrar el depósito",
+    "Choisissez où va l'argent retiré.": "Elija adónde va el dinero retirado.",
+    "Choisissez le compte espèces à déposer.": "Elija la cuenta de efectivo a depositar.",
+    "Où va l'argent retiré ?": "¿Adónde va el dinero retirado?",
+    "Nouveau compte espèces": "Nueva cuenta de efectivo",
+    "Nom du nouveau compte espèces": "Nombre de la nueva cuenta de efectivo",
+    "Impossible de renommer le compte.": "No se pudo renombrar la cuenta.",
+    "Nouveau nom du compte": "Nuevo nombre de la cuenta",
+    "Renommer le compte {name}": "Renombrar la cuenta {name}"
   },
   "ar": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "حساباتك بعملات مختلفة: الرسوم البيانية معروضة بعملة {code}. غيّر العملة هنا أو اختر حسابًا.",
@@ -898,6 +914,14 @@ export const translations = {
     "Compte espèces": "حساب النقد",
     "Un compte « Espèces » ({currency}) sera créé automatiquement.": "سيتم إنشاء حساب «نقد» ({currency}) تلقائيًا.",
     "Enregistrer le retrait": "تسجيل السحب",
-    "Enregistrer le dépôt": "تسجيل الإيداع"
+    "Enregistrer le dépôt": "تسجيل الإيداع",
+    "Choisissez où va l'argent retiré.": "اختر وجهة المبلغ المسحوب.",
+    "Choisissez le compte espèces à déposer.": "اختر حساب النقد المراد إيداعه.",
+    "Où va l'argent retiré ?": "أين يذهب المبلغ المسحوب؟",
+    "Nouveau compte espèces": "حساب نقد جديد",
+    "Nom du nouveau compte espèces": "اسم حساب النقد الجديد",
+    "Impossible de renommer le compte.": "تعذر إعادة تسمية الحساب.",
+    "Nouveau nom du compte": "الاسم الجديد للحساب",
+    "Renommer le compte {name}": "إعادة تسمية الحساب {name}"
   }
 };
