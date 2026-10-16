@@ -2,7 +2,7 @@ import { useAccounts, getAccountType } from '../hooks/useAccounts';
 import { formatAmount } from '../utils/formatters';
 import { t } from '../i18n';
 
-function AccountBalances({ onDelete }) {
+function AccountBalances({ onDelete, onCash }) {
   const { accounts, balances, getAccountCurrency } = useAccounts();
 
   if (accounts.length === 0) return null;
@@ -40,6 +40,11 @@ function AccountBalances({ onDelete }) {
           );
         })}
       </ul>
+      {onCash && (
+        <button type="button" className="cash-link" onClick={onCash}>
+          💵 {t("Retrait / dépôt d'espèces")}
+        </button>
+      )}
     </section>
   );
 }

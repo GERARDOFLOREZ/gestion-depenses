@@ -8,6 +8,7 @@ import { formatAmount, formatDate, getTodayISO } from '../utils/formatters';
 import AccountBalances from './AccountBalances';
 import CurrencySelector from './CurrencySelector';
 import DbNotice from './DbNotice';
+import CashForm from './CashForm';
 import { t } from '../i18n';
 
 function AccountsPage() {
@@ -72,6 +73,15 @@ function AccountsPage() {
     setTrError('');
   };
 
+  // Retrait / dépôt = virement entre une banque et un compte espèces.
+  const kindOf = (tf) => {
+    const a = getAccount(tf.from_account_id);
+    const b = getAccount(tf.to_account_id);
+    if (a && b && a.type !== 'especes' && b.type === 'especes') return { label: t('Retrait'), color: '#F9A825' };
+    if (a && b && a.type === 'especes' && b.type !== 'especes') return { label: t('Dépôt'), color: '#00897B' };
+    return { label: t('Virement'), color: '#607D8B' };
+  };
+
   return (
     <>
       <DbNotice error={error} />
@@ -85,6 +95,8 @@ function AccountsPage() {
       </section>
 
       <AccountBalances onDelete={handleDeleteAccount} />
+
+      <CashForm />
 
       <form className="expense-form" onSubmit={handleAddAccount}>
         <h2>{t('Ajouter un compte')}</h2>
@@ -164,7 +176,7 @@ function AccountsPage() {
           <ul className="expense-list">
             {transfers.map((tf) => (
               <li key={tf.id} className="expense-item">
-                <span className="expense-category-badge" style={{ backgroundColor: '#607D8B' }}>{t('Virement')}</span>
+                <span className="expense-category-badge" style={{ backgroundColor: kindOf(tf).color }}>{kindOf(tf).label}</span>
                 <div className="expense-info">
                   <p className="expense-label">{getAccount(tf.from_account_id)?.name || '?'} → {getAccount(tf.to_account_id)?.name || '?'}</p>
                   <p className="expense-date">{formatDate(tf.date)}</p>

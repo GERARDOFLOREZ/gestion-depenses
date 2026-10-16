@@ -39,7 +39,7 @@ import './App.css';
 
 const VIEW_TABS = ['dashboard', 'expenses', 'incomes'];
 
-function Dashboard({ onSeeBudgets, onSeePlanned }) {
+function Dashboard({ onSeeBudgets, onSeePlanned, onSeeCash }) {
   const { viewCurrencyCode, isMixed } = useView();
   return (
     <section className="tab-panel">
@@ -53,7 +53,7 @@ function Dashboard({ onSeeBudgets, onSeePlanned }) {
       </div>
       <BudgetAlertsBanner onSeeBudgets={onSeeBudgets} />
       <UpcomingCard onSee={onSeePlanned} />
-      <AccountBalances />
+      <AccountBalances onCash={onSeeCash} />
       <MonthlyChart />
       <ExpenseChart />
     </section>
@@ -175,7 +175,7 @@ function Shell({
       {VIEW_TABS.includes(activeTab) && <ViewBar />}
 
       <main className="app-main">
-        {activeTab === 'dashboard' && <Dashboard onSeeBudgets={() => setActiveTab('budgets')} onSeePlanned={() => setActiveTab('expenses')} />}
+        {activeTab === 'dashboard' && <Dashboard onSeeBudgets={() => setActiveTab('budgets')} onSeePlanned={() => setActiveTab('expenses')} onSeeCash={() => setActiveTab('accounts')} />}
 
         {activeTab === 'incomes' && (
           <section className="tab-panel">
