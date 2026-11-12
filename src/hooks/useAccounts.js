@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import { ExpenseContext } from '../context/ExpenseContext';
 import { IncomeContext } from '../context/IncomeContext';
 import { useExtras } from './useExtras';
@@ -36,28 +36,34 @@ export function useAccounts() {
   const getAccount = (id) => rows.find((a) => a.id === id);
   const getAccountCurrency = (id) => getCurrencyByCode(getAccount(id)?.currency || currencyCode);
 
-  const balances = useMemo(() => {
+  // Solde de chaque compte, en ne comptant que les opérations datées avant `before` (AAAA-MM-JJ, exclu).
+  // Sans `before` : tout l'historique.
+  const balanceAt = useCallback((before) => {
+    const ok = (d) => !before || d < before;
     const result = {};
     accounts.rows.forEach((a) => {
       result[a.id] = Number(a.initial_balance) || 0;
     });
     (incomeCtx?.incomes || []).forEach((i) => {
-      if (i.account_id in result) result[i.account_id] += Number(i.amount);
+      if (i.account_id in result && ok(i.date)) result[i.account_id] += Number(i.amount);
     });
     (expenseCtx?.expenses || []).forEach((e) => {
-      if (e.account_id in result) result[e.account_id] -= Number(e.amount);
+      if (e.account_id in result && ok(e.date)) result[e.account_id] -= Number(e.amount);
     });
     transfers.rows.forEach((t) => {
+      if (!ok(t.date)) return;
       if (t.from_account_id in result) result[t.from_account_id] -= Number(t.amount);
       if (t.to_account_id in result) result[t.to_account_id] += Number(t.to_amount);
     });
     // Règlement de dette : je paie (argent sort) ou on me paie (argent entre)
     debtPayments.rows.forEach((p) => {
-      if (!(p.account_id in result)) return;
+      if (!(p.account_id in result) || !ok(p.date)) return;
       result[p.account_id] += p.direction === 'owed_to_me' ? Number(p.amount) : -Number(p.amount);
     });
     return result;
   }, [accounts.rows, transfers.rows, debtPayments.rows, expenseCtx?.expenses, incomeCtx?.incomes]);
+
+  const balances = useMemo(() => balanceAt(null), [balanceAt]);
 
   return {
     accounts: rows,
@@ -73,5 +79,6 @@ export function useAccounts() {
     getAccount,
     getAccountCurrency,
     balances,
+    balanceAt,
   };
 }

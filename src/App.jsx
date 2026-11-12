@@ -164,6 +164,11 @@ function Shell({
             {totals.map((tot) => (
               <span key={tot.currency.code} className="balance-value">{formatAmount(tot.balance, tot.currency)}</span>
             ))}
+            {totals.some((tot) => tot.opening) && (
+              <span className="balance-carry">
+                {t('dont reporté : {amount}', { amount: totals.filter((tot) => tot.opening).map((tot) => formatAmount(tot.opening, tot.currency)).join(' · ') })}
+              </span>
+            )}
           </div>
         </div>
       </header>

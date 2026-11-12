@@ -319,7 +319,8 @@ export const translations = {
     "Montant réglé": "Amount settled",
     "Payer": "Pay",
     "Recevoir": "Receive",
-    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "Delete this debt? Its payments will also be reversed on your accounts."
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "Delete this debt? Its payments will also be reversed on your accounts.",
+    "dont reporté : {amount}": "incl. carried over: {amount}"
   },
   "es": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "Tus cuentas usan monedas distintas: los gráficos se muestran en {code}. Cambia la moneda aquí o elige una cuenta.",
@@ -640,7 +641,8 @@ export const translations = {
     "Montant réglé": "Importe saldado",
     "Payer": "Pagar",
     "Recevoir": "Recibir",
-    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "¿Eliminar esta deuda? Sus pagos también se anularán en sus cuentas."
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "¿Eliminar esta deuda? Sus pagos también se anularán en sus cuentas.",
+    "dont reporté : {amount}": "incl. arrastrado: {amount}"
   },
   "ar": {
     "Vos comptes ont des devises différentes : les graphiques sont en {code}. Changez la devise ici, ou choisissez un compte.": "حساباتك بعملات مختلفة: الرسوم البيانية معروضة بعملة {code}. غيّر العملة هنا أو اختر حسابًا.",
@@ -961,6 +963,7 @@ export const translations = {
     "Montant réglé": "المبلغ المسدَّد",
     "Payer": "دفع",
     "Recevoir": "استلام",
-    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "حذف هذا الدين؟ ستُلغى تسوياته أيضًا من حساباتك."
+    "Supprimer cette dette ? Ses règlements seront aussi annulés sur vos comptes.": "حذف هذا الدين؟ ستُلغى تسوياته أيضًا من حساباتك.",
+    "dont reporté : {amount}": "منها مُرحَّل: {amount}"
   }
 };

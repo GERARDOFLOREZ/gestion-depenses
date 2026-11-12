@@ -1488,3 +1488,4 @@ body { color: var(--text); }
 .debt-pay .inline-add { flex-wrap: wrap; }
 .debt-payments { list-style: none; margin: 0.5rem 0 0; padding: 0; font-size: 0.85rem; color: var(--muted, #666); }
 .debt-payments li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+.balance-carry { display: block; font-size: 0.72rem; opacity: 0.75; margin-top: 0.15rem; font-weight: 500; }
