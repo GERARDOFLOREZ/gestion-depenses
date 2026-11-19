@@ -39,8 +39,9 @@ where not exists (select 1 from spaces s where s.user_id = u.id and s.kind = 'pe
 -- ===== 4. Budgets : un budget par catégorie ET par espace =====
 alter table budgets add constraint budgets_space_id_category_key unique (space_id, category);
 
--- À exécuter APRÈS le déploiement du code qui utilise onConflict 'space_id,category' :
--- alter table budgets drop constraint budgets_user_id_category_key;
+-- L'ancienne règle (user_id, category) a été supprimée après le déploiement du code
+-- qui utilise onConflict 'space_id,category' :
+alter table budgets drop constraint if exists budgets_user_id_category_key;
 
 -- ===== 5. Nouveaux utilisateurs : espace perso créé automatiquement =====
 -- (trigger on_auth_user_created_space -> public.handle_new_user_space())
