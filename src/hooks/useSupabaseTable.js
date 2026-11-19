@@ -1,14 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from './useAuth';
+import { useSpace } from './useSpace';
 
 /**
  * Petit hook CRUD générique pour une table Supabase protégée par RLS.
  * Retourne { rows, loading, error, add, update, remove, refetch }.
  * `error` est renseigné si la table n'existe pas encore (SQL non exécuté).
+ * Les lignes sont celles de l'espace actif (space_id).
  */
 export function useSupabaseTable(table, { orderBy = 'created_at', ascending = false } = {}) {
   const { user } = useAuth();
+  const { spaceId } = useSpace();
   const userId = user?.id;
   const [rows, setRows] = useState([]);
   const [fetching, setFetching] = useState(true);
@@ -16,7 +19,7 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
   const [error, setError] = useState(null);
 
   const refetch = useCallback(async () => {
-    if (!userId) {
+    if (!userId || !spaceId) {
       setRows([]);
       setFetching(false);
       return;
@@ -25,6 +28,7 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
     const { data, error: err } = await supabase
       .from(table)
       .select('*')
+      .eq('space_id', spaceId)
       .order(orderBy, { ascending });
     if (err) {
       console.error(`Erreur de chargement (${table}) :`, err);
@@ -36,7 +40,7 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
     }
     setFetching(false);
     setLoadedFor(userId);
-  }, [table, orderBy, ascending, userId]);
+  }, [table, orderBy, ascending, userId, spaceId]);
 
   // « en chargement » tant que les données de CET utilisateur n'ont pas été reçues
   const loading = userId ? loadedFor !== userId || fetching : false;
@@ -48,7 +52,7 @@ export function useSupabaseTable(table, { orderBy = 'created_at', ascending = fa
   const add = async (row) => {
     const { data, error: err } = await supabase
       .from(table)
-      .insert([{ ...row, user_id: userId }])
+      .insert([{ ...row, user_id: userId, space_id: spaceId }])
       .select()
       .single();
     if (err) {

@@ -33,6 +33,9 @@ import ExpenseList from './components/ExpenseList';
 import IncomeForm from './components/IncomeForm';
 import IncomeList from './components/IncomeList';
 import LanguageSelector from './components/LanguageSelector';
+import SpaceSwitcher from './components/SpaceSwitcher';
+import { useSpace } from './hooks/useSpace';
+import { spaceLabel } from './utils/spaces';
 import { useLanguage } from './hooks/useLanguage';
 import { t } from './i18n';
 import './App.css';
@@ -107,10 +110,12 @@ function Shell({
   const current = getMenuItem(activeTab);
   const { month, accountId } = useView();
   const { getAccount } = useAccounts();
+  const { spaces, currentSpace } = useSpace();
   const totals = useViewTotals();
   useLanguage();
 
   const scopeLabel = [
+    spaces.length > 1 ? spaceLabel(currentSpace) : null,
     month === 'all' ? t('Toute la période') : formatMonthLabel(month),
     accountId === 'all' ? t('Tous les comptes') : getAccount(accountId)?.name,
   ]
@@ -138,6 +143,7 @@ function Shell({
             <p className="header-scope">{scopeLabel}</p>
           </div>
           <div className="header-actions">
+            <SpaceSwitcher />
             <LanguageSelector className="header-lang" />
             <button type="button" className="logout-btn" onClick={signOut}>
               {t('Déconnexion')}

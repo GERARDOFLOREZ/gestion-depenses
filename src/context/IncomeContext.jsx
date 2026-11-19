@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
+import { useSpace } from '../hooks/useSpace';
 
 export const defaultIncomeFilters = {
   category: 'all',
@@ -13,12 +14,13 @@ export const IncomeContext = createContext(null);
 
 export function IncomeProvider({ children }) {
   const { user } = useAuth();
+  const { spaceId } = useSpace();
   const [incomes, setIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(defaultIncomeFilters);
 
   const fetchIncomes = useCallback(async () => {
-    if (!user) {
+    if (!user || !spaceId) {
       setIncomes([]);
       setLoading(false);
       return;
@@ -28,6 +30,7 @@ export function IncomeProvider({ children }) {
     const { data, error } = await supabase
       .from('incomes')
       .select('*')
+      .eq('space_id', spaceId)
       .order('date', { ascending: false });
 
     if (error) {
@@ -36,7 +39,7 @@ export function IncomeProvider({ children }) {
       setIncomes(data);
     }
     setLoading(false);
-  }, [user]);
+  }, [user, spaceId]);
 
   useEffect(() => {
     fetchIncomes();
@@ -45,7 +48,7 @@ export function IncomeProvider({ children }) {
   const addIncome = async (income) => {
     const { data, error } = await supabase
       .from('incomes')
-      .insert([{ ...income, user_id: user.id }])
+      .insert([{ ...income, user_id: user.id, space_id: spaceId }])
       .select();
 
     if (error) {

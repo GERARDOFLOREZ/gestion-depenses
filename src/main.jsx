@@ -10,12 +10,16 @@ import { CurrencyProvider } from './context/CurrencyContext.jsx';
 import { ExtrasProvider } from './context/ExtrasContext.jsx';
 import { LanguageProvider } from './context/LanguageContext.jsx';
 import { ViewProvider } from './context/ViewContext.jsx';
+import { SpaceProvider } from './context/SpaceContext.jsx';
+import SpaceGate from './components/SpaceGate.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <LanguageProvider>
     <AuthProvider>
+      <SpaceProvider>
       <CurrencyProvider>
+        <SpaceGate>
         <ExpenseProvider>
           <IncomeProvider>
             <BudgetProvider>
@@ -27,7 +31,9 @@ createRoot(document.getElementById('root')).render(
             </BudgetProvider>
           </IncomeProvider>
         </ExpenseProvider>
+        </SpaceGate>
       </CurrencyProvider>
+      </SpaceProvider>
     </AuthProvider>
     </LanguageProvider>
   </StrictMode>
