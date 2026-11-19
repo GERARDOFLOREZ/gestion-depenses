@@ -121,6 +121,46 @@ export function SpaceProvider({ children }) {
     [userId]
   );
 
+  const renameSpace = useCallback(async (id, name) => {
+    const clean = name.trim();
+    if (!clean) return { error: new Error('Nom vide') };
+    const { data, error: err } = await supabase
+      .from('spaces')
+      .update({ name: clean })
+      .eq('id', id)
+      .select()
+      .single();
+    if (err) {
+      console.error("Erreur de renommage de l'espace :", err);
+      return { error: err };
+    }
+    setSpaces((prev) => prev.map((s) => (s.id === id ? data : s)));
+    return { data };
+  }, []);
+
+  // Supprime l'espace ET toutes ses données (cascade en base). L'espace perso est protégé.
+  const deleteSpace = useCallback(
+    async (id) => {
+      const target = spaces.find((s) => s.id === id);
+      if (!target || target.kind === 'perso') {
+        return { error: new Error('Cet espace ne peut pas être supprimé') };
+      }
+      const { error: err } = await supabase.from('spaces').delete().eq('id', id);
+      if (err) {
+        console.error("Erreur de suppression de l'espace :", err);
+        return { error: err };
+      }
+      const perso = spaces.find((s) => s.kind === 'perso');
+      setSpaces((prev) => prev.filter((s) => s.id !== id));
+      if (perso) {
+        saveChosen(userId, perso.id);
+        setChosenId(perso.id);
+      }
+      return {};
+    },
+    [spaces, userId]
+  );
+
   const value = useMemo(
     () => ({
       spaces: visibleSpaces,
@@ -131,8 +171,13 @@ export function SpaceProvider({ children }) {
       reload: fetchSpaces,
       setSpaceId,
       createSpace,
+      renameSpace,
+      deleteSpace,
     }),
-    [visibleSpaces, currentSpace, spaceId, userId, ready, error, fetchSpaces, setSpaceId, createSpace]
+    [
+      visibleSpaces, currentSpace, spaceId, userId, ready, error,
+      fetchSpaces, setSpaceId, createSpace, renameSpace, deleteSpace,
+    ]
   );
 
   return <SpaceContext.Provider value={value}>{children}</SpaceContext.Provider>;
