@@ -1397,6 +1397,7 @@ body { color: var(--text); }
   font: inherit; font-size: 0.85rem; font-weight: 600; padding: 0 0.1rem; width: auto; cursor: pointer;
 }
 .lang-select select option { color: #16241c; }
+.space-select select { max-width: 8rem; text-overflow: ellipsis; }
 .auth-page { position: relative; }
 .lang-select.auth-lang {
   position: absolute; top: 1rem; inset-inline-end: 1rem; background: var(--card); color: var(--green-900);

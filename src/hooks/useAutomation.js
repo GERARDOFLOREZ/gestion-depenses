@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import { ExpenseContext } from '../context/ExpenseContext';
 import { IncomeContext } from '../context/IncomeContext';
 import { useAuth } from './useAuth';
+import { useSpace } from './useSpace';
 import { useExtras } from './useExtras';
 import { useCurrency } from './useCurrency';
 import { getTodayISO } from '../utils/formatters';
@@ -16,6 +17,7 @@ import { pendingDates } from '../utils/recurrence';
  */
 export function useAutomation() {
   const { user } = useAuth();
+  const { spaceId, currentSpace } = useSpace();
   const { accounts, recurring } = useExtras();
   const expenseCtx = useContext(ExpenseContext);
   const incomeCtx = useContext(IncomeContext);
@@ -32,20 +34,25 @@ export function useAutomation() {
     bootstrapped.current = true;
     (async () => {
       // Garde-fou (autre appareil, chargement lent) : ne jamais créer de doublon.
-      const { data: existing } = await supabase.from('accounts').select('id').limit(1);
+      const { data: existing } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('space_id', spaceId)
+        .limit(1);
       if (existing && existing.length > 0) {
         accounts.refetch();
         return;
       }
       const { data, error } = await accounts.add({
-        name: 'Compte principal',
+        // Espace perso : « Compte principal » comme avant ; autre espace : le compte porte le nom de l'espace.
+        name: currentSpace?.kind === 'custom' ? currentSpace.name : 'Compte principal',
         type: 'courant',
         currency: currencyCode,
         initial_balance: 0,
       });
       if (error || !data) return;
-      await supabase.from('expenses').update({ account_id: data.id }).is('account_id', null);
-      await supabase.from('incomes').update({ account_id: data.id }).is('account_id', null);
+      await supabase.from('expenses').update({ account_id: data.id }).eq('space_id', spaceId).is('account_id', null);
+      await supabase.from('incomes').update({ account_id: data.id }).eq('space_id', spaceId).is('account_id', null);
       expenseCtx.refetch();
       incomeCtx.refetch();
     })();

@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../hooks/useAuth';
+import { useSpace } from '../hooks/useSpace';
 
 export const defaultExpenseFilters = {
   category: 'all',
@@ -13,6 +14,7 @@ export const ExpenseContext = createContext(null);
 
 export function ExpenseProvider({ children }) {
   const { user } = useAuth();
+  const { spaceId } = useSpace();
   const [rows, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(defaultExpenseFilters);
@@ -22,7 +24,7 @@ export function ExpenseProvider({ children }) {
   const plannedExpenses = useMemo(() => rows.filter((e) => e.status === 'planned'), [rows]);
 
   const fetchExpenses = useCallback(async () => {
-    if (!user) {
+    if (!user || !spaceId) {
       setExpenses([]);
       setLoading(false);
       return;
@@ -32,6 +34,7 @@ export function ExpenseProvider({ children }) {
     const { data, error } = await supabase
       .from('expenses')
       .select('*')
+      .eq('space_id', spaceId)
       .order('date', { ascending: false });
 
     if (error) {
@@ -40,7 +43,7 @@ export function ExpenseProvider({ children }) {
       setExpenses(data);
     }
     setLoading(false);
-  }, [user]);
+  }, [user, spaceId]);
 
   useEffect(() => {
     fetchExpenses();
@@ -49,7 +52,7 @@ export function ExpenseProvider({ children }) {
   const addExpense = async (expense) => {
     const { data, error } = await supabase
       .from('expenses')
-      .insert([{ ...expense, user_id: user.id }])
+      .insert([{ ...expense, user_id: user.id, space_id: spaceId }])
       .select();
 
     if (error) {
