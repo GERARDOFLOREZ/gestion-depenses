@@ -32,7 +32,7 @@ where not exists (select 1 from spaces s where s.user_id = u.id and s.kind = 'pe
 --  custom_categories, debts, debt_payments) :
 --   - colonne space_id rattachée à l'espace perso de l'utilisateur pour l'existant
 --   - valeur par défaut = espace perso (public.default_space_id())
---   - NOT NULL, index sur space_id
+--   - NOT NULL, index (space_id, user_id) (couvre aussi la clé étrangère composite)
 --   - clé étrangère composite (space_id, user_id) -> spaces (id, user_id) :
 --     une ligne ne peut appartenir qu'à un espace de son propriétaire
 
