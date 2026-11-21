@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useExpenses } from './hooks/useExpenses';
 import { useAuth } from './hooks/useAuth';
 import { useView } from './hooks/useView';
@@ -34,6 +34,9 @@ import IncomeForm from './components/IncomeForm';
 import IncomeList from './components/IncomeList';
 import LanguageSelector from './components/LanguageSelector';
 import SpaceSwitcher from './components/SpaceSwitcher';
+import GuidedTour from './components/GuidedTour';
+import TourWelcome from './components/TourWelcome';
+import { hasDoneTour, hasSeenTour, markTourDone, markTourSeen } from './utils/tour';
 import { useSpace } from './hooks/useSpace';
 import { spaceLabel } from './utils/spaces';
 import { useLanguage } from './hooks/useLanguage';
@@ -107,6 +110,32 @@ function Shell({
   const { toasts, dismissToast } = useBudgetToasts();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const { user } = useAuth();
+  const userId = user?.id;
+
+  // Visite guidée : s'ouvre toute seule la première fois (sur cet appareil), jamais obligatoire.
+  // Première connexion : une grande fenêtre de bienvenue propose la visite (« Plus tard » possible).
+  const [welcomeOpen, setWelcomeOpen] = useState(() => Boolean(userId) && !hasSeenTour(userId));
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourDone, setTourDone] = useState(() => !userId || hasDoneTour(userId));
+  useEffect(() => {
+    if (welcomeOpen && userId) markTourSeen(userId);
+  }, [welcomeOpen, userId]);
+  const startTour = useCallback(() => {
+    setMenuOpen(false);
+    setWelcomeOpen(false);
+    setTourOpen(true);
+    setTourDone(true);
+    if (userId) markTourDone(userId);
+  }, [userId]);
+  const closeWelcome = useCallback(() => setWelcomeOpen(false), []);
+  const closeTour = useCallback(() => setTourOpen(false), []);
+  const finishTour = useCallback(() => {
+    setTourOpen(false);
+    setActiveTab('expenses');
+    setTimeout(() => document.getElementById('label')?.focus(), 150);
+  }, [setActiveTab]);
+
   const current = getMenuItem(activeTab);
   const { month, accountId } = useView();
   const { getAccount } = useAccounts();
@@ -123,20 +152,23 @@ function Shell({
     .join(' · ');
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout${tourOpen ? ' tour-open' : ''}`}>
       <NavTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
         open={menuOpen}
         onClose={closeMenu}
+        onTour={startTour}
+        tourPending={!tourDone}
       />
 
       <div className="app-content">
       <header className="app-header">
         <div className="app-header-top">
-          <button type="button" className="menu-btn" onClick={() => setMenuOpen(true)} aria-label={t('Ouvrir le menu')}>
+          <button type="button" className={`menu-btn${tourDone ? '' : ' has-dot'}`} onClick={() => setMenuOpen(true)} aria-label={t('Ouvrir le menu')}>
             <span className="menu-btn-icon">☰</span>
             <span className="menu-btn-label">{t('Menu')}</span>
+            {!tourDone && <span className="tour-dot" aria-hidden="true" />}
           </button>
           <div className="header-title">
             <h1>💰 {t('Gestion des finances')}</h1>
@@ -224,6 +256,8 @@ function Shell({
       </div>
 
       <BudgetToasts toasts={toasts} onClose={dismissToast} />
+      {welcomeOpen && <TourWelcome onStart={startTour} onLater={closeWelcome} />}
+      {tourOpen && <GuidedTour onNavigate={setActiveTab} onClose={closeTour} onFinish={finishTour} />}
     </div>
   );
 }
