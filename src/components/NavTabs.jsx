@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MENU_GROUPS } from '../data/menu';
 import { t } from '../i18n';
 
-function NavTabs({ activeTab, onTabChange, open, onClose, onTour }) {
+function NavTabs({ activeTab, onTabChange, open, onClose, onTour, tourPending }) {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -20,6 +20,16 @@ function NavTabs({ activeTab, onTabChange, open, onClose, onTour }) {
             ✕
           </button>
         </div>
+
+        {onTour && (
+          <div className="side-tour">
+            <button type="button" className="side-tour-btn" onClick={onTour}>
+              <span className="side-link-icon">🧭</span>
+              {t('Visite guidée')}
+              {tourPending && <span className="tour-dot tour-dot-inline" aria-hidden="true" />}
+            </button>
+          </div>
+        )}
 
         {MENU_GROUPS.map((group) => (
           <div key={group.title} className="side-group">
@@ -41,14 +51,6 @@ function NavTabs({ activeTab, onTabChange, open, onClose, onTour }) {
           </div>
         ))}
 
-        {onTour && (
-          <div className="side-group side-tour">
-            <button type="button" className="side-link side-tour-btn" onClick={onTour}>
-              <span className="side-link-icon">🧭</span>
-              {t('Revoir la visite')}
-            </button>
-          </div>
-        )}
       </nav>
     </>
   );

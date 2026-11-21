@@ -11,26 +11,33 @@ import { t } from '../i18n';
 function GuidedTour({ onNavigate, onClose, onFinish }) {
   useLanguage(); // la carte se réaffiche si la langue change pendant la visite
   const [index, setIndex] = useState(0);
+  const [bottomFor, setBottomFor] = useState(-1); // étape pour laquelle la carte est passée en bas
   const primaryRef = useRef(null);
+  const cardRef = useRef(null);
 
   const step = TOUR_STEPS[index];
   const total = TOUR_STEPS.length;
   const isFirst = index === 0;
   const isLast = index === total - 1;
+  const place = bottomFor === index ? 'bottom' : 'top';
 
   // 1. Ouvrir la vraie page de l'étape.
   useEffect(() => {
     onNavigate(step.tab);
   }, [step.tab, onNavigate]);
 
-  // 2. Mettre la zone en évidence et la faire défiler à l'écran.
+  // 2. Mettre la zone en évidence (le reste s'assombrit) et la faire défiler juste sous la carte.
+  //    La carte est en haut ; si la zone reste cachée derrière, elle passe en bas.
   //    La page vient de changer : on réessaie un court instant le temps qu'elle s'affiche.
   useEffect(() => {
     let cancelled = false;
     let timer;
+    let settle;
     let el = null;
+    let lifted = false;
     let tries = 0;
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const behavior = reduceMotion ? 'auto' : 'smooth';
 
     const spot = () => {
       if (cancelled) return;
@@ -40,21 +47,35 @@ function GuidedTour({ onNavigate, onClose, onFinish }) {
           tries += 1;
           timer = setTimeout(spot, 120);
         } else {
-          window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          window.scrollTo({ top: 0, behavior });
         }
         return;
       }
       el.classList.add('tour-spot');
-      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      if (window.getComputedStyle(el).position === 'static') {
+        el.classList.add('tour-spot-lift');
+        lifted = true;
+      }
+      const cardHeight = cardRef.current?.offsetHeight ?? 180;
+      window.scrollBy({ top: el.getBoundingClientRect().top - (cardHeight + 32), behavior });
+
+      settle = setTimeout(() => {
+        if (cancelled || !el || !cardRef.current) return;
+        const spotBox = el.getBoundingClientRect();
+        const cardBox = cardRef.current.getBoundingClientRect();
+        if (spotBox.top < cardBox.bottom && spotBox.bottom > cardBox.top) setBottomFor(index);
+      }, reduceMotion ? 80 : 700);
     };
 
     timer = setTimeout(spot, 60);
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      clearTimeout(settle);
       el?.classList.remove('tour-spot');
+      if (lifted) el?.classList.remove('tour-spot-lift');
     };
-  }, [step]);
+  }, [step, index]);
 
   // 3. Clavier : Échap ferme ; le focus suit le bouton principal.
   useEffect(() => {
@@ -68,7 +89,9 @@ function GuidedTour({ onNavigate, onClose, onFinish }) {
   }, [index]);
 
   return (
-    <section className="tour-card" role="dialog" aria-modal="false" aria-label={t('Visite guidée')}>
+    <>
+    <div className="tour-dim" aria-hidden="true" />
+    <section ref={cardRef} className={`tour-card${place === 'bottom' ? ' at-bottom' : ''}`} role="dialog" aria-modal="false" aria-label={t('Visite guidée')}>
       <div className="tour-head">
         <span className="tour-icon" aria-hidden="true">{step.icon}</span>
         <h3 className="tour-title">{t(step.title)}</h3>
@@ -107,6 +130,7 @@ function GuidedTour({ onNavigate, onClose, onFinish }) {
         </div>
       </div>
     </section>
+    </>
   );
 }
 

@@ -1494,14 +1494,66 @@ body { color: var(--text); }
 /* =====================================================
    VISITE GUIDÉE
    ===================================================== */
-.side-tour { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.5rem; margin-bottom: 0; }
-.side-tour-btn { color: var(--green-700); }
+.side-tour { margin-bottom: 0.9rem; }
+.side-tour-btn {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%;
+  border: none; cursor: pointer; font: inherit; font-weight: 800; font-size: 0.95rem;
+  padding: 0.7rem 0.85rem; border-radius: 12px; color: #3e2a00;
+  background: linear-gradient(135deg, #ffb300, #ff8f00);
+  box-shadow: 0 4px 14px rgba(255, 179, 0, 0.45);
+}
+.side-tour-btn:hover { filter: brightness(1.05); }
+[dir="rtl"] .side-tour-btn { text-align: right; }
+
+/* Pastille dorée : rappelle que la visite existe tant qu'elle n'a pas été lancée. */
+.menu-btn.has-dot { position: relative; }
+.tour-dot {
+  position: absolute; top: -4px; inset-inline-end: -4px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #ffb300; border: 2px solid #fff;
+  animation: tour-dot-pulse 1.4s ease-in-out infinite;
+}
+.tour-dot-inline { position: static; margin-inline-start: auto; border-color: #3e2a00; background: #fff; }
+@keyframes tour-dot-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
+  50% { transform: scale(1.15); box-shadow: 0 0 0 7px rgba(255, 179, 0, 0); }
+}
+
+/* Fenêtre de bienvenue (première connexion). */
+.tour-welcome-backdrop {
+  position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center;
+  padding: 1rem; background: rgba(10, 30, 20, 0.6);
+  animation: tour-fade 0.25s ease;
+}
+.tour-welcome {
+  width: min(100%, 420px); text-align: center;
+  background: var(--card); border-radius: 24px; padding: 2rem 1.5rem 1.5rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  animation: tour-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.tour-welcome-icon { font-size: 3rem; line-height: 1; animation: tour-bob 2.2s ease-in-out infinite; display: inline-block; }
+.tour-welcome h2 { margin: 0.8rem 0 0.5rem; font-size: 1.4rem; font-weight: 800; color: var(--green-900); letter-spacing: -0.01em; }
+.tour-welcome p { margin: 0 0 1.4rem; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+.tour-welcome-go {
+  display: block; width: 100%; border: none; cursor: pointer; font: inherit; font-weight: 800; font-size: 1.05rem;
+  padding: 0.95rem 1rem; border-radius: 14px; color: #3e2a00;
+  background: linear-gradient(135deg, #ffb300, #ff8f00); box-shadow: 0 6px 18px rgba(255, 179, 0, 0.5);
+}
+.tour-welcome-later { margin-top: 0.7rem; border: none; background: transparent; color: var(--muted); font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 0.4rem 0.8rem; }
+.tour-welcome-later:hover { color: var(--text); }
+@keyframes tour-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tour-pop { from { transform: scale(0.9) translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes tour-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-6px) rotate(8deg); } }
+
+/* Pendant la visite : le reste de l'écran s'assombrit, la zone expliquée reste lumineuse. */
+.tour-dim { position: fixed; inset: 0; z-index: 60; background: rgba(10, 30, 20, 0.55); pointer-events: none; animation: tour-fade 0.3s ease; }
+.tour-spot-lift { position: relative; }
 
 /* La page derrière la carte reste entièrement visible et défilable. */
 .app-layout.tour-open .app-content { padding-bottom: 15rem; }
 
 .tour-card {
-  position: fixed; left: 0; right: 0; bottom: 1rem; z-index: 70;
+  position: fixed; left: 0; right: 0; top: 1rem; z-index: 70;
   margin-inline: auto;
   width: min(calc(100% - 2rem), 460px);
   background: var(--card);
@@ -1509,8 +1561,10 @@ body { color: var(--text); }
   border-radius: 20px;
   box-shadow: 0 16px 40px rgba(15, 61, 39, 0.32);
   padding: 1rem 1.1rem;
-  animation: toast-in 0.25s ease;
+  animation: tour-drop 0.3s ease;
 }
+.tour-card.at-bottom { top: auto; bottom: 1rem; animation-name: toast-in; }
+@keyframes tour-drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .tour-head { display: flex; align-items: center; gap: 0.65rem; }
 .tour-icon { font-size: 1.7rem; line-height: 1; flex: 0 0 auto; }
 .tour-title { flex: 1 1 auto; margin: 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; color: var(--green-900); }
@@ -1534,8 +1588,8 @@ body { color: var(--text); }
 .tour-spot {
   outline: 3px solid #ffb300;
   outline-offset: 4px;
-  scroll-margin-top: 1rem;
-  animation: tour-pulse 1.6s ease-in-out 2;
+  z-index: 65;
+  animation: tour-pulse 1.6s ease-in-out infinite;
 }
 @keyframes tour-pulse {
   0%, 100% { outline-color: #ffb300; }
@@ -1547,5 +1601,5 @@ body { color: var(--text); }
   .tour-actions { justify-content: flex-end; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tour-card, .tour-spot, .tour-progress span { animation: none; transition: none; }
+  .tour-card, .tour-spot, .tour-progress span, .tour-dot, .tour-welcome, .tour-welcome-icon, .tour-welcome-backdrop, .tour-dim { animation: none; transition: none; }
 }

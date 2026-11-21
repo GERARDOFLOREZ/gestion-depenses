@@ -18,3 +18,23 @@ export function markTourSeen(userId) {
     console.error('Erreur lors de la sauvegarde de la visite guidée :', error);
   }
 }
+
+// « Fait » = la personne a lancé la visite. Tant que ce n'est pas le cas, une pastille dorée
+// lui rappelle que la visite existe (sur le bouton Menu et dans le menu).
+const doneKey = (userId) => `gestion-depenses:tour:v1:done:${userId}`;
+
+export function hasDoneTour(userId) {
+  try {
+    return localStorage.getItem(doneKey(userId)) === 'done';
+  } catch {
+    return true;
+  }
+}
+
+export function markTourDone(userId) {
+  try {
+    localStorage.setItem(doneKey(userId), 'done');
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde de la visite guidée :', error);
+  }
+}
