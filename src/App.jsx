@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useExpenses } from './hooks/useExpenses';
 import { useAuth } from './hooks/useAuth';
 import { useView } from './hooks/useView';
@@ -34,6 +34,8 @@ import IncomeForm from './components/IncomeForm';
 import IncomeList from './components/IncomeList';
 import LanguageSelector from './components/LanguageSelector';
 import SpaceSwitcher from './components/SpaceSwitcher';
+import GuidedTour from './components/GuidedTour';
+import { hasSeenTour, markTourSeen } from './utils/tour';
 import { useSpace } from './hooks/useSpace';
 import { spaceLabel } from './utils/spaces';
 import { useLanguage } from './hooks/useLanguage';
@@ -107,6 +109,24 @@ function Shell({
   const { toasts, dismissToast } = useBudgetToasts();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const { user } = useAuth();
+
+  // Visite guidée : s'ouvre toute seule la première fois (sur cet appareil), jamais obligatoire.
+  const [tourOpen, setTourOpen] = useState(() => Boolean(user?.id) && !hasSeenTour(user.id));
+  useEffect(() => {
+    if (tourOpen && user?.id) markTourSeen(user.id);
+  }, [tourOpen, user?.id]);
+  const startTour = useCallback(() => {
+    setMenuOpen(false);
+    setTourOpen(true);
+  }, []);
+  const closeTour = useCallback(() => setTourOpen(false), []);
+  const finishTour = useCallback(() => {
+    setTourOpen(false);
+    setActiveTab('expenses');
+    setTimeout(() => document.getElementById('label')?.focus(), 150);
+  }, [setActiveTab]);
+
   const current = getMenuItem(activeTab);
   const { month, accountId } = useView();
   const { getAccount } = useAccounts();
@@ -123,12 +143,13 @@ function Shell({
     .join(' · ');
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout${tourOpen ? ' tour-open' : ''}`}>
       <NavTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
         open={menuOpen}
         onClose={closeMenu}
+        onTour={startTour}
       />
 
       <div className="app-content">
@@ -224,6 +245,7 @@ function Shell({
       </div>
 
       <BudgetToasts toasts={toasts} onClose={dismissToast} />
+      {tourOpen && <GuidedTour onNavigate={setActiveTab} onClose={closeTour} onFinish={finishTour} />}
     </div>
   );
 }
