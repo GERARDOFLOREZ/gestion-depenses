@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MENU_GROUPS } from '../data/menu';
 import { t } from '../i18n';
 
-function NavTabs({ activeTab, onTabChange, open, onClose, onTour, tourPending }) {
+function NavTabs({ activeTab, onTabChange, open, onClose, onTour, tourPending, onLegal }) {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -51,6 +51,13 @@ function NavTabs({ activeTab, onTabChange, open, onClose, onTour, tourPending })
           </div>
         ))}
 
+
+        {onLegal && (
+          <div className="side-legal">
+            <button type="button" onClick={() => { onLegal('terms'); onClose(); }}>{t("Conditions d'utilisation")}</button>
+            <button type="button" onClick={() => { onLegal('privacy'); onClose(); }}>{t('Confidentialité')}</button>
+          </div>
+        )}
       </nav>
     </>
   );

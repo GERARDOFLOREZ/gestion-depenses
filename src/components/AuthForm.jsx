@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { t } from '../i18n';
 import LanguageSelector from './LanguageSelector';
 
-function AuthForm() {
+function AuthForm({ onLegal }) {
   const { signUp, signIn, resetPassword } = useAuth();
   const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
@@ -127,6 +127,17 @@ function AuthForm() {
             {isForgot || isSignUp ? t('Se connecter') : t("S'inscrire")}
           </button>
         </p>
+
+        {onLegal && (
+          <div className="auth-legal">
+            {isSignUp && <p>{t("En vous inscrivant, vous acceptez les conditions d'utilisation et la politique de confidentialité :")}</p>}
+            <p>
+              <button type="button" className="auth-switch-btn" onClick={() => onLegal('terms')}>{t("Conditions d'utilisation")}</button>
+              {' · '}
+              <button type="button" className="auth-switch-btn" onClick={() => onLegal('privacy')}>{t('Confidentialité')}</button>
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -36,6 +36,7 @@ import LanguageSelector from './components/LanguageSelector';
 import SpaceSwitcher from './components/SpaceSwitcher';
 import GuidedTour from './components/GuidedTour';
 import TourWelcome from './components/TourWelcome';
+import LegalPage from './components/LegalPage';
 import { hasDoneTour, hasSeenTour, markTourDone, markTourSeen } from './utils/tour';
 import { useSpace } from './hooks/useSpace';
 import { spaceLabel } from './utils/spaces';
@@ -72,6 +73,9 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingExpense, setEditingExpense] = useState(null);
   const [editingIncome, setEditingIncome] = useState(null);
+  const [legalDoc, setLegalDoc] = useState(null); // 'terms' | 'privacy' | null
+  const closeLegal = useCallback(() => setLegalDoc(null), []);
+  const legal = legalDoc && <LegalPage doc={legalDoc} onClose={closeLegal} onSwitch={setLegalDoc} />;
 
   if (loading) {
     return <div className="auth-loading">{t('Chargement...')}</div>;
@@ -82,7 +86,12 @@ function App() {
   }
 
   if (!user) {
-    return <AuthForm />;
+    return (
+      <>
+        <AuthForm onLegal={setLegalDoc} />
+        {legal}
+      </>
+    );
   }
 
   return (
@@ -95,7 +104,9 @@ function App() {
         setEditingExpense={setEditingExpense}
         editingIncome={editingIncome}
         setEditingIncome={setEditingIncome}
+        onLegal={setLegalDoc}
       />
+      {legal}
     </div>
   );
 }
@@ -103,7 +114,7 @@ function App() {
 // Séparé pour que les hooks de données ne tournent que lorsque l'utilisateur est connecté.
 function Shell({
   activeTab, setActiveTab, signOut,
-  editingExpense, setEditingExpense, editingIncome, setEditingIncome,
+  editingExpense, setEditingExpense, editingIncome, setEditingIncome, onLegal,
 }) {
   useAutomation();
   useExpenses();
@@ -160,6 +171,7 @@ function Shell({
         onClose={closeMenu}
         onTour={startTour}
         tourPending={!tourDone}
+        onLegal={onLegal}
       />
 
       <div className="app-content">
