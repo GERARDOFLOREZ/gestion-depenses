@@ -1603,3 +1603,23 @@ body { color: var(--text); }
 @media (prefers-reduced-motion: reduce) {
   .tour-card, .tour-spot, .tour-progress span, .tour-dot, .tour-welcome, .tour-welcome-icon, .tour-welcome-backdrop, .tour-dim { animation: none; transition: none; }
 }
+
+/* ---------- Conditions d'utilisation / Confidentialité ---------- */
+.auth-legal { margin-top: 1rem; text-align: center; font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.auth-legal p { margin: 0 0 0.25rem; }
+.side-legal { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; padding: 0.75rem 0.85rem 0.25rem; margin-top: 0.5rem; border-top: 1px solid var(--border); }
+.side-legal button { border: none; background: transparent; padding: 0; font: inherit; font-size: 0.78rem; color: var(--muted); cursor: pointer; text-decoration: underline; }
+.side-legal button:hover { color: var(--green-700); }
+.legal-backdrop { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(10, 30, 20, 0.6); animation: tour-fade 0.2s ease; }
+.legal-panel { display: flex; flex-direction: column; width: min(100%, 640px); max-height: min(100%, 780px); background: var(--card); border-radius: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); overflow: hidden; }
+.legal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.25rem 0.9rem; border-bottom: 1px solid var(--border); }
+.legal-head h2 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--green-900); }
+.legal-updated { margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--muted); }
+.legal-close { flex: none; border: none; background: var(--bg); color: var(--text); width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font-size: 0.95rem; }
+.legal-body { overflow-y: auto; padding: 0.5rem 1.25rem 1rem; }
+.legal-body h3 { margin: 1.1rem 0 0.35rem; font-size: 0.98rem; color: var(--green-900); }
+.legal-body p { margin: 0 0 0.5rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+.legal-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1.25rem; border-top: 1px solid var(--border); }
+.legal-link { border: none; background: transparent; color: var(--green-700); font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
+.legal-done { border: none; cursor: pointer; font: inherit; font-weight: 700; padding: 0.6rem 1.2rem; border-radius: 10px; color: #fff; background: var(--green-700); }
+@media (prefers-reduced-motion: reduce) { .legal-backdrop { animation: none; } }
